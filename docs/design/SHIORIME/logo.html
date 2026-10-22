@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SHIORIME ロゴ案</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@500;700&family=Kiwi+Maru:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root { --page-bg:#E8E9E7; --page-ink:#23272A; --page-sub:#5D6368;
+          --maru:"Zen Maru Gothic","Hiragino Maru Gothic ProN",sans-serif;
+          --kiwi:"Kiwi Maru","Hiragino Maru Gothic ProN",serif; }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --page-bg:#1A1C1E; --page-ink:#E6E6E2; --page-sub:#A2A7AC; } }
+  :root[data-theme="dark"] { --page-bg:#1A1C1E; --page-ink:#E6E6E2; --page-sub:#A2A7AC; }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--page-bg); color:var(--page-ink); font-family:var(--maru); line-height:1.7; }
+  .wrap { max-width:1000px; margin:0 auto; padding:32px 16px 56px; }
+  h1 { font-size:22px; margin:0 0 6px; }
+  h2 { font-size:17px; margin:36px 0 2px; }
+  .lead, .note { margin:0; color:var(--page-sub); font-size:14px; max-width:46em; }
+  .stage { margin-top:14px; background:#14232B; color:#ECE6D8; border-radius:20px; padding:28px 24px; display:flex; flex-wrap:wrap; gap:36px; align-items:center; }
+
+  .mark { display:block; }
+  .word { font-weight:700; letter-spacing:.12em; }
+
+  /* ヘッダー用（アイコン＋文字を横に） */
+  .lock-h { display:flex; align-items:center; gap:8px; }
+  .lock-h .mark { width:34px; height:34px; }
+  .lock-h .word { font-size:19px; }
+
+  /* タイル付き */
+  .lock-t { display:flex; align-items:center; gap:12px; }
+  .lock-t .tile { width:48px; height:48px; border-radius:22%; background:#1C3039; overflow:hidden; }
+  .lock-t .tile svg { width:100%; height:100%; display:block; }
+  .lock-t .word { font-size:22px; }
+
+  /* ウェルカムページ用（縦） */
+  .lock-v { display:flex; flex-direction:column; align-items:center; gap:6px; margin:0 auto; }
+  .lock-v .mark { width:120px; height:120px; }
+  .lock-v .word { font-size:34px; margin-top:4px; }
+  .lock-v .kana { font-family:var(--kiwi); font-size:14px; color:#A9B4B8; letter-spacing:.3em; }
+
+  /* 画面に置いたときの例 */
+  .phone { width:100%; max-width:340px; border-radius:28px; overflow:hidden; background:#14232B; color:#ECE6D8; border:1px solid rgba(127,127,127,.3); }
+  .phone .bar { padding:14px 18px 10px; display:flex; justify-content:space-between; align-items:center; }
+  .phone .rest { font-size:11px; color:#9AA7AC; }
+  .phone .lock-h .mark { width:28px; height:28px; }
+  .phone .lock-h .word { font-size:16px; }
+  .phone .body { padding:8px 18px 22px; font-size:13px; color:#9AA7AC; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>SHIORIME ロゴ案（アイコン＋名前）</h1>
+  <p class="lead">アイコンは「E. 読書灯に照らされた芽」です。使う場所に合わせて、3つの並べ方を用意しました。</p>
+
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <defs>
+      <g id="e">
+        <circle cx="50" cy="40" r="30" fill="#E2A84B" opacity=".14"/>
+        <circle cx="50" cy="40" r="19" fill="#E2A84B" opacity=".14"/>
+        <path d="M50 60 C 41 54, 28 53, 16 56 V 76 C 28 73, 41 74, 50 80 Z" fill="#ECE6D8"/>
+        <path d="M50 60 C 59 54, 72 53, 84 56 V 76 C 72 73, 59 74, 50 80 Z" fill="#ECE6D8"/>
+        <path d="M50 60 V 36" stroke="#E2A84B" stroke-width="4.5" stroke-linecap="round" fill="none"/>
+        <path d="M50 42 C 48 30, 38 24, 26 26 C 28 38, 38 44, 50 42 Z" fill="#E2A84B"/>
+        <path d="M50 38 C 52 26, 62 19, 74 21 C 72 33, 62 39, 50 38 Z" fill="#E2A84B"/>
+      </g>
+    </defs>
+  </svg>
+
+  <h2>1. 横並び（画面の上部・ヘッダー用）</h2>
+  <p class="note">アイコンの背景（角丸の四角）を外し、名前と横に並べた形。アプリの各画面の左上に置きます。</p>
+  <div class="stage">
+    <span class="lock-h"><svg class="mark" viewBox="10 8 80 80" aria-hidden="true"><use href="#e"/></svg><span class="word">SHIORIME</span></span>
+  </div>
+
+  <h2>2. 横並び（アイコンの背景あり）</h2>
+  <p class="note">アプリのアイコンそのものと名前を並べた形。README や、ブラウザのタブ・ホーム画面のアイコンとそろえたいときに使います。</p>
+  <div class="stage">
+    <span class="lock-t"><span class="tile"><svg viewBox="0 0 100 100" aria-hidden="true"><use href="#e"/></svg></span><span class="word">SHIORIME</span></span>
+  </div>
+
+  <h2>3. 縦並び（ウェルカムページ用）</h2>
+  <p class="note">大きなアイコンの下に名前とよみがなを置いた形。初めて開いた人に、最初に見せる場所で使います。</p>
+  <div class="stage">
+    <span class="lock-v"><svg class="mark" viewBox="10 8 80 80" aria-hidden="true"><use href="#e"/></svg><span class="word">SHIORIME</span><span class="kana">しおりめ</span></span>
+  </div>
+
+  <h2>画面に置いたときの例（1 を使用）</h2>
+  <div class="stage">
+    <div class="phone">
+      <div class="bar">
+        <span class="lock-h"><svg class="mark" viewBox="10 8 80 80" aria-hidden="true"><use href="#e"/></svg><span class="word">SHIORIME</span></span>
+        <span class="rest">AI提案 本日あと3回</span>
+      </div>
+      <div class="body">（ここに本棚や気づきが表示されます）</div>
+    </div>
+  </div>
+</div>
+</body>
+</html>
