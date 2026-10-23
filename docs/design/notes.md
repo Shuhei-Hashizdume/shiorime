@@ -115,7 +115,7 @@
 - パスワードのハッシュ化：Argon2id（例：pwdlib）。
   - 理由：bcrypt の72バイト制限（日本語では約24文字を超えた部分が無視される）を避けるため。
 - パスワードの前後の空白の除去は、Pydantic の空白除去の設定（`str_strip_whitespace` など）を使い、登録・ログイン・パスワード変更・退会のすべての入口で適用する。
-- JWT を発行し、httpOnly・Secure・SameSite=Lax の Cookie で渡す。MVP はアクセストークンのみ・有効期限7日。リフレッシュトークンは第2段階。
+- JWT を発行し、httpOnly・Secure・SameSite=Lax の Cookie で渡す。MVP はアクセストークンのみ・有効期限7日（JWT の exp）。Cookie の期限は30日にして、期限切れを見分けられるようにする（api.md 3-3）。リフレッシュトークンは第2段階。
 - ログアウト時は、発行時と同じ属性で Cookie を削除する。
 - 有効期限内のJWTでも、ユーザーが存在しない（退会済み）場合は拒否する。
 - CSRF 対策：SameSite=Lax と、状態を変える操作を GET で作らないこと。必要なら Origin ヘッダーの確認も加える（設計時に決める）。
