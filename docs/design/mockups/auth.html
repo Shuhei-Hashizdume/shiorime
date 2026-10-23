@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SHIORIME 新規登録・ログインの画面案</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Kiwi+Maru:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root { --page-bg:#E3E5E3; --page-ink:#23272A; --page-sub:#5D6368; --font:"Kiwi Maru","Hiragino Maru Gothic ProN",serif; }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --page-bg:#1A1C1E; --page-ink:#E6E6E2; --page-sub:#A2A7AC; } }
+  :root[data-theme="dark"] { --page-bg:#1A1C1E; --page-ink:#E6E6E2; --page-sub:#A2A7AC; }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--page-bg); color:var(--page-ink); font-family:var(--font); font-synthesis:none; line-height:1.6; }
+  .wrap { max-width:1240px; margin:0 auto; padding:32px 16px 56px; }
+  h1 { font-size:22px; font-weight:500; margin:0 0 6px; } .lead { font-size:14px; color:var(--page-sub); margin:0 0 24px; max-width:56em; }
+  .grid { display:grid; gap:32px 20px; grid-template-columns:repeat(auto-fit,minmax(270px,1fr)); }
+  .opt > h2 { font-size:16px; font-weight:500; margin:12px 0 2px; } .opt > p { font-size:13px; color:var(--page-sub); margin:0; }
+
+  .night { --bg:#14232B; --card:#1C3039; --shade:#233B45; --text:#ECE6D8; --soft:#D5CFC2; --muted:#9AA7AC; --accent:#E2A84B; --on-accent:#14232B; --on:#E2A84B; --tint:rgba(226,168,75,.16); --err:#EE9A8F; --book:#ECE6D8; }
+  .phone { position:relative; width:100%; max-width:300px; height:660px; margin:0 auto; border-radius:28px; overflow:hidden; display:flex; flex-direction:column;
+           background:var(--bg); color:var(--text); border:1px solid rgba(127,127,127,.3); }
+  .top { display:flex; align-items:center; padding:12px 8px 0; } .top span { width:44px; height:44px; display:flex; align-items:center; justify-content:center; } .top svg { width:24px; height:24px; }
+  .body { flex:1; overflow:hidden; padding:0 20px 16px; }
+  .brand { display:flex; align-items:center; gap:8px; margin:0 0 4px; } .brand svg { width:34px; height:34px; }
+  .brand span { font-family:"Zen Maru Gothic","Hiragino Maru Gothic ProN",sans-serif; font-weight:700; letter-spacing:.12em; font-size:15px; }
+  h3 { font-size:24px; font-weight:500; margin:6px 0 2px; } .sub { font-size:13px; color:var(--soft); margin:0 0 6px; }
+  .lab { font-size:13px; color:var(--soft); margin:12px 0 6px; display:block; }
+  .field { display:flex; justify-content:space-between; align-items:center; background:var(--card); border-radius:12px; padding:10px 14px; font-size:16px; border:1.5px solid var(--shade); min-height:48px; }
+  .field.ph span { color:var(--muted); } .field.bad { border-color:var(--err); } .field svg { width:20px; height:20px; color:var(--muted); }
+  .hint { font-size:12px; color:var(--muted); margin:4px 0 0; }
+  .msg { display:flex; gap:6px; color:var(--err); font-size:12px; margin-top:6px; line-height:1.6; } .msg svg { width:16px; height:16px; flex:none; margin-top:1px; }
+  .chips { display:flex; flex-wrap:wrap; gap:6px; }
+  .chips b { font-weight:400; font-size:13px; min-height:38px; padding:0 12px; display:flex; align-items:center; border-radius:999px; border:1.5px solid var(--shade); color:var(--soft); }
+  .chips b.on { background:var(--tint); border-color:var(--on); color:var(--on); font-weight:500; }
+  .chips.bad b { border-color:var(--err); }
+  .agree { display:flex; gap:10px; align-items:flex-start; font-size:13px; margin:16px 0 0; line-height:1.7; }
+  .box { width:22px; height:22px; border-radius:6px; border:1.5px solid var(--muted); flex:none; display:grid; place-items:center; margin-top:1px; }
+  .box.on { background:var(--accent); border-color:var(--accent); } .box svg { width:14px; height:14px; color:var(--on-accent); }
+  .box.bad { border-color:var(--err); }
+  .agree u { text-underline-offset:3px; }
+  .btn { display:flex; align-items:center; justify-content:center; min-height:48px; border-radius:999px; font-weight:500; font-size:16px; margin-top:18px; background:var(--accent); color:var(--on-accent); }
+  .alt { text-align:center; font-size:13px; color:var(--soft); margin:14px 0 0; } .alt u { color:var(--text); text-underline-offset:3px; }
+  .banner { display:flex; gap:8px; align-items:flex-start; font-size:13px; border-radius:12px; padding:10px 12px; margin:10px 0 0; line-height:1.7; }
+  .banner svg { width:18px; height:18px; flex:none; margin-top:2px; }
+  .banner.info { background:var(--tint); border:1px solid var(--on); } .banner.info svg { color:var(--on); }
+  .banner.err { border:1.5px solid var(--err); color:var(--text); } .banner.err svg { color:var(--err); }
+  .line { fill:none; stroke:currentColor; stroke-width:1.9; stroke-linecap:round; stroke-linejoin:round; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>新規登録・ログインの画面案</h1>
+  <p class="lead">ウェルカムページの「はじめる（新規登録）」「ログイン」から開く画面です。この見本から、書体をキウイ丸1つ（ロゴの文字だけ Zen 丸ゴシック）にしています。ブラウザで開くと正しい書体で表示されます。</p>
+
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <defs>
+      <g id="mark">
+        <circle cx="50" cy="40" r="30" fill="#E2A84B" opacity=".16"/><circle cx="50" cy="40" r="19" fill="#E2A84B" opacity=".16"/>
+        <path d="M50 60 C 41 54, 28 53, 16 56 V 76 C 28 73, 41 74, 50 80 Z" fill="var(--book)"/>
+        <path d="M50 60 C 59 54, 72 53, 84 56 V 76 C 72 73, 59 74, 50 80 Z" fill="var(--book)"/>
+        <path d="M50 60 V 36" stroke="#E2A84B" stroke-width="4.5" stroke-linecap="round" fill="none"/>
+        <path d="M50 42 C 48 30, 38 24, 26 26 C 28 38, 38 44, 50 42 Z" fill="#E2A84B"/>
+        <path d="M50 38 C 52 26, 62 19, 74 21 C 72 33, 62 39, 50 38 Z" fill="#E2A84B"/>
+      </g>
+      <g id="back" class="line"><path d="M14.5 5.5 L 8 12 L 14.5 18.5"/></g>
+      <g id="eye" class="line"><path d="M2.5 12 C 5 7.5 8.3 5.5 12 5.5 S 19 7.5 21.5 12 C 19 16.5 15.7 18.5 12 18.5 S 5 16.5 2.5 12 Z"/><circle cx="12" cy="12" r="3"/></g>
+      <g id="check" class="line" style="stroke-width:3"><path d="M5 12.5 L 10 17 L 19 7.5"/></g>
+      <g id="alert" class="line"><circle cx="12" cy="12" r="9"/><path d="M12 7.5 V 12.8"/><path d="M12 16.3 V 16.4"/></g>
+      <g id="info" class="line"><circle cx="12" cy="12" r="9"/><path d="M12 11 V 16.5"/><path d="M12 7.6 V 7.7"/></g>
+    </defs>
+  </svg>
+
+  <div class="grid">
+    <section class="opt"><div class="phone night" data-s="signup"></div><h2>1. 新規登録</h2><p>メールアドレス・パスワード・属性・同意の4つ。属性は5つのボタンから選ぶ。登録したら本棚（本がまだない状態）へ。</p></section>
+    <section class="opt"><div class="phone night" data-s="signupErr"></div><h2>2. 新規登録のエラー</h2><p>「はじめる」を押したときに確かめ、直し方をそれぞれの欄の下に出す。</p></section>
+    <section class="opt"><div class="phone night" data-s="login"></div><h2>3. ログイン</h2><p>メールアドレスとパスワード。ログインしたら本棚へ。</p></section>
+    <section class="opt"><div class="phone night" data-s="loginErr"></div><h2>4. ログインの失敗</h2><p>どちらが違うかは伝えない（他人のメールアドレスが登録されているかを知られないため）。回数制限に達したときの文も決める。</p></section>
+    <section class="opt"><div class="phone night" data-s="loginInfo"></div><h2>5. お知らせ付きのログイン</h2><p>パスワード変更・退会・ログインの有効期限切れのあとに開いたとき、画面の上にお知らせを出す。</p></section>
+  </div>
+</div>
+<script>
+  var hd = '<div class="top"><span aria-label="戻る"><svg viewBox="0 0 24 24"><use href="#back"/></svg></span></div>';
+  var brand = '<div class="brand"><svg viewBox="10 8 80 80" aria-hidden="true"><use href="#mark"/></svg><span>SHIORIME</span></div>';
+  var eye = '<svg viewBox="0 0 24 24" aria-label="パスワードを表示"><use href="#eye"/></svg>';
+  var al = '<svg viewBox="0 0 24 24" class="line"><use href="#alert"/></svg>';
+  function f(v, ph, extra, bad){ return '<div class="field'+(v?'':' ph')+(bad?' bad':'')+'"><span>'+(v||ph)+'</span>'+(extra||'')+'</div>'; }
+  var attrs = ['高校生','大学生・専門学生','社会人','主婦・主夫','その他'];
+  function chips(sel, bad){ return '<div class="chips'+(bad?' bad':'')+'">' + attrs.map(function(a){ return '<b'+(a===sel?' class="on"':'')+'>'+a+'</b>'; }).join('') + '</div>'; }
+  function agree(on, bad){ return '<div class="agree"><span class="box'+(on?' on':'')+(bad?' bad':'')+'">'+(on?'<svg viewBox="0 0 24 24"><use href="#check"/></svg>':'')+'</span><span><u>利用規約</u>と<u>プライバシーポリシー</u>に同意します</span></div>'; }
+  var html = {
+    signup: hd + '<div class="body">' + brand + '<h3>はじめる</h3><p class="sub">アカウントを作って、気づきを残しましょう。</p>' +
+      '<label class="lab">メールアドレス</label>' + f('shiori@example.com') + '<label class="lab">パスワード</label>' + f('••••••••••','',eye) + '<p class="hint">8〜128文字</p>' +
+      '<label class="lab">あなたについて（AI提案に使います）</label>' + chips('社会人') + agree(true) + '<span class="btn">はじめる</span><p class="alt">アカウントをお持ちの方は <u>ログイン</u></p></div>',
+    signupErr: hd + '<div class="body">' + brand + '<h3>はじめる</h3>' +
+      '<label class="lab">メールアドレス</label>' + f('shiori@example.com','','',true) + '<div class="msg">'+al+'このメールアドレスは既に登録されています。ログインしてください。</div>' +
+      '<label class="lab">パスワード</label>' + f('•••••','',eye,true) + '<div class="msg">'+al+'8〜128文字で入力してください</div>' +
+      '<label class="lab">あなたについて（AI提案に使います）</label>' + chips('', true) + '<div class="msg">'+al+'あてはまるものを1つ選んでください</div>' + agree(false, true) + '<div class="msg">'+al+'同意すると登録できます</div><span class="btn">はじめる</span></div>',
+    login: hd + '<div class="body">' + brand + '<h3>ログイン</h3><p class="sub">おかえりなさい。</p>' +
+      '<label class="lab">メールアドレス</label>' + f('shiori@example.com') + '<label class="lab">パスワード</label>' + f('••••••••','',eye) + '<span class="btn">ログイン</span><p class="alt">はじめての方は <u>新規登録</u></p></div>',
+    loginErr: hd + '<div class="body">' + brand + '<h3>ログイン</h3><div class="banner err"><svg viewBox="0 0 24 24" class="line"><use href="#alert"/></svg>メールアドレスまたはパスワードが正しくありません。</div>' +
+      '<label class="lab">メールアドレス</label>' + f('shiori@example.com') + '<label class="lab">パスワード</label>' + f('••••••••','',eye) + '<span class="btn">ログイン</span>' +
+      '<div class="banner err" style="margin-top:22px"><svg viewBox="0 0 24 24" class="line"><use href="#alert"/></svg>（回数制限に達したとき）ログインの試行回数が多すぎます。1分ほど待ってから、もう一度お試しください。</div></div>',
+    loginInfo: hd + '<div class="body">' + brand + '<h3>ログイン</h3><div class="banner info"><svg viewBox="0 0 24 24" class="line"><use href="#info"/></svg>パスワードを変更しました。新しいパスワードでログインしてください。</div>' +
+      '<label class="lab">メールアドレス</label>' + f('shiori@example.com') + '<label class="lab">パスワード</label>' + f('','パスワード',eye) + '<span class="btn">ログイン</span>' +
+      '<p class="hint" style="margin-top:16px">ほかのお知らせ：「退会しました。ご利用ありがとうございました。」「ログインの有効期限が切れました。もう一度ログインしてください。」</p></div>'
+  };
+  document.querySelectorAll('.phone').forEach(function(p){ p.innerHTML = html[p.dataset.s]; });
+</script>
+</body>
+</html>
