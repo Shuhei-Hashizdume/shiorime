@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SHIORIME エラー・成功の表示サンプル</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&family=Kiwi+Maru:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --page-bg:#E8E9E7; --page-ink:#23272A; --page-sub:#5D6368;
+    --maru:"Zen Maru Gothic","Hiragino Maru Gothic ProN",sans-serif;
+    --kiwi:"Kiwi Maru","Hiragino Maru Gothic ProN",serif;
+    --night:#14232B; --desk:#1C3039; --shade:#233B45; --floor:#101C22;
+    --paper:#ECE6D8; --soft:#D5CFC2; --muted:#9AA7AC; --lamp:#E2A84B; --quote:#F1D9A8;
+    --error:#EE9A8F; --success:#8FC1A0;
+  }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --page-bg:#1A1C1E; --page-ink:#E6E6E2; --page-sub:#A2A7AC; } }
+  :root[data-theme="dark"] { --page-bg:#1A1C1E; --page-ink:#E6E6E2; --page-sub:#A2A7AC; }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--page-bg); color:var(--page-ink); font-family:var(--maru); line-height:1.6; }
+  .wrap { max-width:1180px; margin:0 auto; padding:32px 16px 56px; }
+  h1 { font-size:22px; margin:0 0 6px; }
+  .lead { margin:0 0 24px; color:var(--page-sub); font-size:14px; max-width:50em; }
+  .grid { display:grid; gap:32px 24px; grid-template-columns:repeat(auto-fit, minmax(270px, 1fr)); }
+  .cap h2 { font-size:16px; margin:12px 0 2px; }
+  .cap p { margin:0; font-size:13px; color:var(--page-sub); }
+
+  .phone { position:relative; width:100%; max-width:300px; height:600px; margin:0 auto; border-radius:28px; overflow:hidden;
+           background:var(--night); color:var(--paper); border:1px solid rgba(127,127,127,.3); display:flex; flex-direction:column; }
+  .top { display:flex; align-items:center; gap:10px; padding:14px 16px 8px; font-size:16px; font-weight:700; }
+  .top svg { width:22px; height:22px; }
+  .body { flex:1; padding:8px 16px 16px; }
+  .ico { fill:none; stroke:currentColor; stroke-width:1.9; stroke-linecap:round; stroke-linejoin:round; }
+
+  /* 入力欄 */
+  label { display:block; font-size:13px; color:var(--soft); margin:14px 0 6px; }
+  .field { background:var(--desk); border-radius:12px; padding:12px 14px; font-size:16px; border:1.5px solid transparent; }
+  .field.area { height:150px; font-size:14px; color:var(--soft); line-height:1.8; overflow:hidden; }
+  .field.bad { border-color:var(--error); }
+  .count { text-align:right; font-size:12px; color:var(--muted); margin-top:4px; }
+  .count.bad { color:var(--error); font-weight:700; }
+  .msg { display:flex; gap:6px; align-items:flex-start; color:var(--error); font-size:13px; margin-top:6px; }
+  .msg svg { width:16px; height:16px; flex:none; margin-top:2px; }
+  .btn { display:flex; align-items:center; justify-content:center; min-height:48px; border-radius:999px; font-weight:700; font-size:16px; margin-top:16px; }
+  .btn.primary { background:var(--lamp); color:var(--night); }
+  .btn.ghost { border:1.5px solid var(--paper); }
+  .btn.danger { background:var(--error); color:var(--night); }
+
+  /* 下から出るシート */
+  .dim { position:absolute; inset:0; background:rgba(5,10,13,.62); }
+  .sheet { position:absolute; left:0; right:0; bottom:0; background:var(--desk); border-radius:20px 20px 0 0; padding:10px 18px 22px; }
+  .grab { width:40px; height:5px; border-radius:3px; background:var(--shade); margin:0 auto 14px; }
+  .sheet h3 { margin:0 0 8px; font-size:17px; }
+  .sheet p { margin:0; font-size:14px; color:var(--soft); line-height:1.8; }
+
+  /* AI提案の失敗 */
+  .card { background:var(--desk); border-radius:16px; padding:14px; margin-top:10px; font-size:13px; }
+  .card .who { font-size:11px; color:var(--muted); margin:0 0 4px; }
+  .card .kiwi { font-family:var(--kiwi); font-size:15px; margin:0; }
+  .alert { margin-top:14px; border:1.5px solid var(--error); border-radius:16px; padding:14px; }
+  .alert .row { display:flex; gap:8px; color:var(--error); font-weight:700; font-size:14px; }
+  .alert .row svg { width:20px; height:20px; flex:none; }
+  .alert p { margin:6px 0 0; font-size:13px; color:var(--soft); }
+
+  /* トースト */
+  .shelf { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin-top:8px; }
+  .bk { aspect-ratio:2/3; border-radius:6px; background:var(--shade); }
+  .bk.n { background:#2E4A55; } .bk.l { background:var(--desk); }
+  .toast { position:absolute; left:16px; right:16px; bottom:84px; background:var(--paper); color:var(--night); border-radius:14px;
+           padding:12px 14px; display:flex; align-items:center; gap:10px; font-size:14px; font-weight:500; }
+  .toast .ok { width:24px; height:24px; border-radius:50%; background:var(--success); display:grid; place-items:center; flex:none; }
+  .toast .ok svg { width:14px; height:14px; stroke:var(--night); }
+  .tabbar { background:var(--floor); display:grid; grid-template-columns:repeat(3,1fr); padding:8px 6px 14px; font-size:11px; color:var(--muted); text-align:center; }
+  .tabbar .on { color:var(--lamp); font-weight:700; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>エラー・成功の表示サンプル</h1>
+  <p class="lead">エラー・削除の色「夕焼け（#EE9A8F）」と、成功の色「若葉（#8FC1A0）」を、実際の場面に当てはめた見本です。どの場面でも、色だけでなく、文章と記号を添えています。</p>
+
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <defs>
+      <g id="alert"><circle cx="12" cy="12" r="9"/><path d="M12 7.5 V 12.8"/><path d="M12 16.3 V 16.4"/></g>
+      <g id="back"><path d="M14.5 5.5 L 8 12 L 14.5 18.5"/></g>
+      <g id="check"><path d="M5 12.5 L 10 17 L 19 7.5"/></g>
+    </defs>
+  </svg>
+
+  <div class="grid">
+    <!-- 1. 入力エラー -->
+    <figure style="margin:0">
+      <div class="phone">
+        <div class="top"><svg viewBox="0 0 24 24" class="ico"><use href="#back"/></svg>気づきを書く</div>
+        <div class="body">
+          <label>引用（任意）</label>
+          <div class="field">他者の課題には踏み込まない</div>
+          <label>気づき（必須）</label>
+          <div class="field area bad">上司の機嫌を自分の責任だと思い込んで、会議で黙ってしまうことが多かった。でも、それは上司の課題であって、私が引き受けるものではないのかもしれない。明日の会議では、まず…</div>
+          <div class="count bad">1,024 / 1,000</div>
+          <div class="msg"><svg viewBox="0 0 24 24" class="ico"><use href="#alert"/></svg>1,000文字以内で入力してください（あと24文字減らしてください）</div>
+          <div class="btn primary">保存する</div>
+        </div>
+      </div>
+      <figcaption class="cap"><h2>1. 入力のエラー</h2><p>枠・文字数・メッセージを夕焼け色にし、どう直せばよいかを文章で伝えます。エラーはトーストで消さず、直すまでその場に残します。</p></figcaption>
+    </figure>
+
+    <!-- 2. 削除の確認 -->
+    <figure style="margin:0">
+      <div class="phone">
+        <div class="top"><svg viewBox="0 0 24 24" class="ico"><use href="#back"/></svg>気づき</div>
+        <div class="body">
+          <div class="card"><p class="who">嫌われる勇気　P.142</p><p class="kiwi" style="color:var(--quote)">「他者の課題には踏み込まない」</p></div>
+        </div>
+        <div class="dim"></div>
+        <div class="sheet">
+          <div class="grab"></div>
+          <h3>この気づきを削除しますか？</h3>
+          <p>この気づきのAI提案2件も一緒に削除されます。削除すると、元に戻せません。</p>
+          <div class="btn danger">削除する</div>
+          <div class="btn ghost" style="margin-top:10px">キャンセル</div>
+        </div>
+      </div>
+      <figcaption class="cap"><h2>2. 削除の確認（シート）</h2><p>取り消せない操作のボタンだけを夕焼け色にします。一緒に消えるものの件数も伝えます。</p></figcaption>
+    </figure>
+
+    <!-- 3. AI提案の失敗 -->
+    <figure style="margin:0">
+      <div class="phone">
+        <div class="top"><svg viewBox="0 0 24 24" class="ico"><use href="#back"/></svg>AI提案</div>
+        <div class="body">
+          <div class="card"><p class="who">AIからの深掘り</p><p class="kiwi">黙ってしまう直前、頭の中ではどんな言葉が浮かんでいますか？</p></div>
+          <div class="card"><p class="who">あなたの回答</p><p style="margin:0">無能だと思われたくない、という焦りだと思う。</p></div>
+          <div class="alert">
+            <div class="row"><svg viewBox="0 0 24 24" class="ico"><use href="#alert"/></svg>AIの提案を取得できませんでした</div>
+            <p>時間をおいて再度お試しください。</p>
+          </div>
+          <div class="btn primary">もう一度送る（回数は使いません）</div>
+        </div>
+      </div>
+      <figcaption class="cap"><h2>3. AI提案の失敗</h2><p>エラーの枠で囲み、すぐ下に次の行動（もう一度送る）を置きます。回数を使わないことも明記します。</p></figcaption>
+    </figure>
+
+    <!-- 4. 成功のトースト -->
+    <figure style="margin:0">
+      <div class="phone">
+        <div class="top">本棚</div>
+        <div class="body">
+          <div class="shelf"><div class="bk n"></div><div class="bk"></div><div class="bk l"></div><div class="bk"></div><div class="bk l"></div><div class="bk n"></div></div>
+        </div>
+        <div class="toast" role="status"><span class="ok"><svg viewBox="0 0 24 24" class="ico" style="stroke-width:3"><use href="#check"/></svg></span>『嫌われる勇気』を本棚に追加しました</div>
+        <nav class="tabbar"><span class="on">本棚</span><span>気づき</span><span>プロフィール</span></nav>
+      </div>
+      <figcaption class="cap"><h2>4. 成功のトースト</h2><p>画面の下に数秒だけ表示します。若葉色の丸にチェックの記号を付け、色が見分けにくい人にも伝わるようにします。</p></figcaption>
+    </figure>
+  </div>
+</div>
+</body>
+</html>
