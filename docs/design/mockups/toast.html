@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SHIORIME トーストの長さ</title>
+<link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root { --page-bg:#E3E5E3; --page-ink:#23272A; --page-sub:#5D6368; --maru:"Zen Maru Gothic","Hiragino Maru Gothic ProN",sans-serif; }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --page-bg:#1A1C1E; --page-ink:#E6E6E2; --page-sub:#A2A7AC; } }
+  :root[data-theme="dark"] { --page-bg:#1A1C1E; --page-ink:#E6E6E2; --page-sub:#A2A7AC; }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--page-bg); color:var(--page-ink); font-family:var(--maru); line-height:1.6; }
+  .wrap { max-width:960px; margin:0 auto; padding:32px 16px 56px; display:grid; gap:28px; grid-template-columns:repeat(auto-fit,minmax(300px,1fr)); align-items:start; }
+  h1 { font-size:22px; margin:0 0 6px; } p.lead { font-size:14px; color:var(--page-sub); margin:0 0 16px; }
+  h2 { font-size:15px; margin:18px 0 8px; }
+  .row { display:flex; flex-wrap:wrap; gap:8px; }
+  button { font:inherit; font-size:13px; min-height:42px; padding:6px 14px; border-radius:21px; border:1px solid currentColor; background:transparent; color:var(--page-ink); cursor:pointer; text-align:left; }
+  button[aria-pressed="true"] { background:var(--page-ink); color:var(--page-bg); }
+  button:focus-visible { outline:2px solid #E2A84B; outline-offset:3px; }
+  .msgs button { width:100%; }
+  .info { font-size:13px; color:var(--page-sub); margin-top:10px; }
+
+  .phone { position:relative; max-width:320px; width:100%; height:560px; margin:0 auto; border-radius:28px; overflow:hidden; background:#14232B; color:#ECE6D8; border:1px solid rgba(127,127,127,.3); }
+  .ph-in { padding:20px 16px; font-size:13px; color:#9AA7AC; }
+  .bar { position:absolute; left:16px; right:16px; bottom:20px; height:4px; border-radius:2px; background:#233B45; overflow:hidden; }
+  .bar i { display:block; height:100%; width:0; background:#E2A84B; }
+  .toast { position:absolute; left:16px; right:16px; bottom:40px; background:#ECE6D8; color:#14232B; border-radius:14px; padding:12px 14px; display:flex; gap:10px; align-items:center; font-size:14px; font-weight:500;
+           opacity:0; transform:translateY(12px); transition:opacity 150ms cubic-bezier(.4,0,1,1), transform 150ms cubic-bezier(.4,0,1,1); pointer-events:none; }
+  .toast.show { opacity:1; transform:none; transition:opacity 200ms cubic-bezier(0,0,.2,1), transform 200ms cubic-bezier(0,0,.2,1); }
+  .ok { width:22px; height:22px; border-radius:50%; background:#8FC1A0; display:grid; place-items:center; flex:none; }
+  .ok svg { width:13px; height:13px; fill:none; stroke:#14232B; stroke-width:3; stroke-linecap:round; stroke-linejoin:round; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <section>
+    <h1>トーストの長さを体感する</h1>
+    <p class="lead">表示時間を選んでから、下の文言のボタンを押してください。右の画面にトーストが出ます。画面下の細い線は、経過時間の目安です（実際のアプリには出しません）。</p>
+
+    <h2>1. 表示時間</h2>
+    <div class="row" id="durs">
+      <button type="button" data-ms="2000">2秒</button>
+      <button type="button" data-ms="2500">2.5秒</button>
+      <button type="button" data-ms="3000">3秒</button>
+      <button type="button" data-ms="auto" aria-pressed="true">文の長さで分ける（採用）</button>
+    </div>
+    <p class="info" id="info">15文字までの短い文は2秒、それより長い文は2.5秒表示します。</p>
+
+    <h2>2. 文言を押して表示</h2>
+    <div class="row msgs" id="msgs">
+      <button type="button">本棚に追加しました</button>
+      <button type="button">読書中にしました</button>
+      <button type="button">本の情報を変更しました</button>
+      <button type="button">本棚から削除しました</button>
+      <button type="button">読了にしました（本棚の「読了」に移りました）</button>
+    </div>
+  </section>
+
+  <div class="phone">
+    <div class="ph-in">（画面の内容）</div>
+    <div class="toast" role="status" id="toast"><span class="ok"><svg viewBox="0 0 24 24"><path d="M5 12.5 L 10 17 L 19 7.5"/></svg></span><span id="txt"></span></div>
+    <div class="bar"><i id="bar"></i></div>
+  </div>
+</div>
+<script>
+  var mode = 'auto', timer, toast = document.getElementById('toast'), txt = document.getElementById('txt'), bar = document.getElementById('bar'), info = document.getElementById('info');
+  function msFor(t) { if (mode !== 'auto') return +mode; return t.length <= 15 ? 2000 : 2500; }
+  document.querySelectorAll('#durs button').forEach(function (b) {
+    b.onclick = function () {
+      mode = b.dataset.ms;
+      document.querySelectorAll('#durs button').forEach(function (x) { x.setAttribute('aria-pressed', x === b); });
+      info.textContent = mode === 'auto' ? '15文字までの短い文は2秒、それより長い文は2.5秒表示します。' : 'すべて' + (+mode / 1000) + '秒表示します。';
+    };
+  });
+  document.querySelectorAll('#msgs button').forEach(function (b) {
+    b.onclick = function () {
+      var t = b.textContent, ms = msFor(t);
+      clearTimeout(timer); toast.classList.remove('show'); void toast.offsetWidth;
+      txt.textContent = t; toast.classList.add('show');
+      bar.style.transition = 'none'; bar.style.width = '0'; void bar.offsetWidth;
+      bar.style.transition = 'width ' + ms + 'ms linear'; bar.style.width = '100%';
+      timer = setTimeout(function () { toast.classList.remove('show'); }, ms);
+    };
+  });
+</script>
+</body>
+</html>
