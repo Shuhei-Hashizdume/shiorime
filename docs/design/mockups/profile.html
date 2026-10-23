@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SHIORIME プロフィールの画面案</title>
+<link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&family=Kiwi+Maru:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root { --page-bg:#E3E5E3; --page-ink:#23272A; --page-sub:#5D6368; --maru:"Zen Maru Gothic","Hiragino Maru Gothic ProN",sans-serif; }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --page-bg:#1A1C1E; --page-ink:#E6E6E2; --page-sub:#A2A7AC; } }
+  :root[data-theme="dark"] { --page-bg:#1A1C1E; --page-ink:#E6E6E2; --page-sub:#A2A7AC; }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--page-bg); color:var(--page-ink); font-family:var(--maru); line-height:1.6; }
+  .wrap { max-width:1240px; margin:0 auto; padding:32px 16px 56px; }
+  h1 { font-size:22px; margin:0 0 6px; } .lead { font-size:14px; color:var(--page-sub); margin:0 0 24px; max-width:56em; }
+  .grid { display:grid; gap:32px 20px; grid-template-columns:repeat(auto-fit,minmax(270px,1fr)); }
+  .opt > h2 { font-size:16px; margin:12px 0 2px; } .opt > p { font-size:13px; color:var(--page-sub); margin:0; }
+
+  .night { --bg:#14232B; --card:#1C3039; --shade:#233B45; --text:#ECE6D8; --soft:#D5CFC2; --muted:#9AA7AC; --accent:#E2A84B; --on-accent:#14232B; --on:#E2A84B; --tint:rgba(226,168,75,.16); --err:#EE9A8F; --tabbar:#101C22; --line:#101C22; --dim:rgba(5,10,13,.62); --field:#14232B; }
+  .morning { --bg:#FBF7EC; --card:#FFFFFF; --shade:#F3EBD6; --text:#2B3238; --soft:#454D54; --muted:#62686E; --accent:#E8A23A; --on-accent:#2B3238; --on:#8A5A12; --tint:rgba(232,162,58,.18); --err:#AE4035; --tabbar:#FFFFFF; --line:#F3EBD6; --dim:rgba(43,50,56,.45); --field:#FBF7EC; }
+  .phone { position:relative; width:100%; max-width:300px; height:640px; margin:0 auto; border-radius:28px; overflow:hidden; display:flex; flex-direction:column;
+           background:var(--bg); color:var(--text); border:1px solid rgba(127,127,127,.3); }
+  .head { padding:16px 16px 4px; } .head h3 { margin:0; font-size:20px; }
+  .body { flex:1; overflow:hidden; padding:4px 16px 16px; }
+  .gl { font-size:12px; color:var(--muted); margin:14px 4px 6px; }
+  .group { background:var(--card); border-radius:16px; overflow:hidden; }
+  .item { display:flex; align-items:center; justify-content:space-between; gap:8px; min-height:50px; padding:0 14px; font-size:14px; border-bottom:1px solid var(--shade); }
+  .item:last-child { border-bottom:0; }
+  .item > span:first-child { white-space:nowrap; }
+  .item .v { min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; color:var(--soft); font-size:13px; display:flex; align-items:center; gap:2px; }
+  .item .v svg { width:16px; height:16px; color:var(--muted); }
+  .item.del { color:var(--err); }
+  .seg { display:grid; grid-template-columns:repeat(3,1fr); gap:6px; padding:10px; }
+  .seg b { display:flex; align-items:center; justify-content:center; min-height:40px; border-radius:999px; border:1.5px solid var(--shade); font-weight:500; font-size:12.5px; color:var(--soft); }
+  .seg b.on { background:var(--tint); border-color:var(--on); color:var(--on); font-weight:700; }
+  .rest { font-size:13px; padding:12px 14px; line-height:1.7; } .rest small { display:block; color:var(--muted); font-size:12px; }
+  .tabs { display:grid; grid-template-columns:repeat(3,1fr); padding:8px 4px 14px; background:var(--tabbar); border-top:1px solid var(--line); }
+  .tab { display:flex; flex-direction:column; align-items:center; gap:2px; font-size:11px; color:var(--muted); min-height:46px; justify-content:center; }
+  .tab svg { width:24px; height:24px; } .tab.on { color:var(--on); font-weight:700; }
+  .line { fill:none; stroke:currentColor; stroke-width:1.9; stroke-linecap:round; stroke-linejoin:round; } .fill { fill:currentColor; }
+  .dim { position:absolute; inset:0; background:var(--dim); }
+  .sheet { position:absolute; left:0; right:0; bottom:0; background:var(--card); border-radius:20px 20px 0 0; padding:10px 18px 20px; }
+  .grab { width:40px; height:5px; border-radius:3px; background:var(--shade); margin:0 auto 12px; }
+  .sheet h3 { margin:0 0 8px; font-size:20px; line-height:1.4; } .sheet p.m { margin:0 0 8px; font-size:13px; color:var(--muted); line-height:1.8; }
+  .radio { display:flex; align-items:center; justify-content:space-between; min-height:48px; font-size:15px; border-bottom:1px solid var(--shade); }
+  .radio.on { color:var(--on); font-weight:700; } .radio svg { width:20px; height:20px; }
+  .flab { font-size:13px; color:var(--soft); margin:6px 0 6px; }
+  .field { display:flex; justify-content:space-between; align-items:center; background:var(--field); border-radius:12px; padding:10px 14px; font-size:16px; border:1.5px solid var(--shade); margin-bottom:6px; }
+  .field svg { width:20px; height:20px; color:var(--muted); }
+  .hint { font-size:12px; color:var(--muted); margin:0 0 6px; }
+  .btn { display:flex; align-items:center; justify-content:center; min-height:48px; border-radius:999px; font-weight:500; font-size:16px; margin-top:10px; }
+  .btn.primary { background:var(--accent); color:var(--on-accent); } .btn.sec { border:1.5px solid var(--text); } .btn.danger { background:var(--err); color:var(--bg); }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>プロフィールの画面案</h1>
+  <p class="lead">共通メニューの「プロフィール」から開く画面です。設定の項目を、目的ごとのまとまりに分けて並べます。変更・確認はシートで行います。</p>
+
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <defs>
+      <g id="next" class="line"><path d="M9.5 5.5 L 16 12 L 9.5 18.5"/></g>
+      <g id="check" class="line" style="stroke-width:2.6"><path d="M5 12.5 L 10 17 L 19 7.5"/></g>
+      <g id="eye" class="line"><path d="M2.5 12 C 5 7.5 8.3 5.5 12 5.5 S 19 7.5 21.5 12 C 19 16.5 15.7 18.5 12 18.5 S 5 16.5 2.5 12 Z"/><circle cx="12" cy="12" r="3"/></g>
+      <g id="shelf-off" class="line"><rect x="3.5" y="6" width="4" height="13.5" rx="1.2"/><rect x="8.5" y="4" width="4" height="15.5" rx="1.2"/><rect x="14.6" y="5.2" width="4" height="14.6" rx="1.2" transform="rotate(-14 16.6 19.5)"/><path d="M2.5 20.5 H 21.5"/></g>
+      <g id="note-off" class="line"><path d="M6 3.5 H 15.5 L 19 7 V 20.5 H 6 Z"/><path d="M9 3.5 V 11 L 11 9.5 L 13 11 V 3.5"/><path d="M9 15 H 16 M9 17.8 H 13.5"/></g>
+      <g id="me-on" class="fill"><circle cx="12" cy="8.3" r="4.6"/><path d="M3.8 20 C 4.8 15.6 8 13.8 12 13.8 S 19.2 15.6 20.2 20 C 20.4 20.7 19.9 21.3 19.2 21.3 H 4.8 C 4.1 21.3 3.6 20.7 3.8 20 Z"/></g>
+    </defs>
+  </svg>
+
+  <div class="grid">
+    <section class="opt"><div class="phone night" data-s="main"></div><h2>1. 通常（夜）</h2><p>アカウント・表示・今日のAI提案・その他、の順。ログアウトと退会は一番下に分けて置く。</p></section>
+    <section class="opt"><div class="phone night" data-s="mainb"></div><h2>1-2. 下までスクロールしたところ</h2><p>利用規約・プライバシーポリシーはモーダルで開く。ログアウトは確認なし、退会は夕焼けの色で確認のシートへ。</p></section>
+    <section class="opt"><div class="phone morning" data-s="main"></div><h2>2. 通常（朝）</h2><p>表示の切り替えで「朝」を選んだところ。選ぶとすぐ画面が切り替わる。</p></section>
+    <section class="opt"><div class="phone night" data-s="attr"></div><h2>3. 属性の変更（シート）</h2><p>5つから選ぶ。選ぶとすぐ保存し、シートを閉じてトースト「属性を変更しました」。</p></section>
+    <section class="opt"><div class="phone night" data-s="pw"></div><h2>4. パスワードの変更（シート）</h2><p>今のパスワードと新しいパスワード。変更すると、すべての端末でログアウトし、ログイン画面へ（要件のとおり）。</p></section>
+    <section class="opt"><div class="phone night" data-s="leave"></div><h2>5. 退会（シート）</h2><p>消えるものを具体的に伝え、パスワードを入れて退会する。退会したらログイン画面へ。</p></section>
+  </div>
+</div>
+<script>
+  var tabs = '<nav class="tabs"><span class="tab"><svg viewBox="0 0 24 24"><use href="#shelf-off"/></svg>本棚</span><span class="tab"><svg viewBox="0 0 24 24"><use href="#note-off"/></svg>気づき</span><span class="tab on"><svg viewBox="0 0 24 24"><use href="#me-on"/></svg>プロフィール</span></nav>';
+  var nx = '<svg viewBox="0 0 24 24"><use href="#next"/></svg>';
+  function main(theme){ return '<div class="head"><h3>プロフィール</h3></div><div class="body">' +
+    '<p class="gl">アカウント</p><div class="group"><div class="item"><span>メールアドレス</span><span class="v">shiori@example.com</span></div><div class="item"><span>属性</span><span class="v">社会人'+nx+'</span></div><div class="item"><span>パスワードを変更</span><span class="v">'+nx+'</span></div></div>' +
+    '<p class="gl">表示</p><div class="group"><div class="seg"><b>自動</b><b'+(theme==='night'?' class="on"':'')+'>夜</b><b'+(theme==='morning'?' class="on"':'')+'>朝</b></div><p style="font-size:11px;color:var(--muted);margin:-4px 14px 10px">自動：端末の設定（ダークモード）に合わせます</p></div>' +
+    '<p class="gl">今日のAI提案</p><div class="group"><div class="rest">本日あと3回<small>毎日0時に回復します（気づきの登録は何件でもできます）</small></div></div>' +
+    '<p class="gl">その他</p><div class="group"><div class="item"><span>利用規約</span><span class="v">'+nx+'</span></div><div class="item"><span>プライバシーポリシー</span><span class="v">'+nx+'</span></div></div>' +
+    '<div class="group" style="margin-top:14px"><div class="item"><span>ログアウト</span></div><div class="item del"><span>退会する</span></div></div>' +
+    '</div>' + tabs; }
+  function radio(t, on){ return '<div class="radio'+(on?' on':'')+'"><span>'+t+'</span>'+(on?'<svg viewBox="0 0 24 24"><use href="#check"/></svg>':'')+'</div>'; }
+  var eye = '<svg viewBox="0 0 24 24" aria-label="パスワードを表示"><use href="#eye"/></svg>';
+  var html = {
+    attr: main('night') + '<div class="dim"></div><div class="sheet" role="dialog"><div class="grab"></div><h3>属性</h3><p class="m">AI提案を、あなたの毎日に合った内容にするために使います。</p>' + ['高校生','大学生・専門学生','社会人','主婦・主夫','その他'].map(function(t){ return radio(t, t==='社会人'); }).join('') + '<span class="btn sec">キャンセル</span></div>',
+    pw: main('night') + '<div class="dim"></div><div class="sheet" role="dialog"><div class="grab"></div><h3>パスワードを変更</h3><p class="flab">今のパスワード</p><div class="field"><span>••••••••</span>'+eye+'</div><p class="flab">新しいパスワード</p><div class="field"><span>••••••••••</span>'+eye+'</div><p class="hint">8〜128文字</p><p class="m" style="margin-top:6px">変更すると、すべての端末からログアウトします。新しいパスワードでログインし直してください。</p><span class="btn primary">変更する</span><span class="btn sec">キャンセル</span></div>',
+    leave: main('night') + '<div class="dim"></div><div class="sheet" role="dialog"><div class="grab"></div><h3>退会しますか？</h3><p class="m">本・気づき・次の一歩（AI提案）など、すべてのデータが削除され、元に戻せません。</p><p class="flab">確認のため、パスワードを入力してください</p><div class="field"><span style="color:var(--muted)">パスワード</span>'+eye+'</div><span class="btn danger">退会する</span><span class="btn sec">キャンセル</span></div>'
+  };
+  document.querySelectorAll('.phone').forEach(function(p){ var s = p.dataset.s; if (s === 'mainb') { p.innerHTML = main('night').replace('<div class="body">','<div class="body"><div style="margin-top:-290px"></div>'); return; }
+    p.innerHTML = s === 'main' ? main(p.classList.contains('morning') ? 'morning' : 'night') : html[s]; });
+</script>
+</body>
+</html>

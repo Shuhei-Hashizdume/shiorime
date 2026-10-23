@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SHIORIME 書体の見比べ</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&family=Kiwi+Maru:wght@400;500&family=Zen+Kaku+Gothic+New:wght@400;500;700&family=M+PLUS+2:wght@400;500;700&family=Noto+Sans+JP:wght@400;500;700&family=Klee+One:wght@400;600&family=Murecho:wght@400;500;700&family=Zen+Old+Mincho:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root { --page-bg:#E3E5E3; --page-ink:#23272A; --page-sub:#5D6368; }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --page-bg:#1A1C1E; --page-ink:#E6E6E2; --page-sub:#A2A7AC; } }
+  :root[data-theme="dark"] { --page-bg:#1A1C1E; --page-ink:#E6E6E2; --page-sub:#A2A7AC; }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--page-bg); color:var(--page-ink); font-family:"Hiragino Sans",sans-serif; line-height:1.6; }
+  .wrap { max-width:1240px; margin:0 auto; padding:32px 16px 56px; }
+  h1 { font-size:22px; margin:0 0 6px; } .lead { font-size:14px; color:var(--page-sub); margin:0 0 24px; max-width:60em; }
+  .grid { display:grid; gap:32px 20px; grid-template-columns:repeat(3,minmax(0,1fr)); max-width:1080px; margin:0 auto; }
+  @media (max-width:640px) { .grid { grid-template-columns:1fr !important; } }
+  .opt h2 { font-size:16px; margin:12px 0 2px; } .opt p.c { font-size:13px; color:var(--page-sub); margin:0; }
+  .opt p.f { font-size:12px; color:var(--page-sub); margin:4px 0 0; }
+
+  .phone { width:100%; max-width:310px; margin:0 auto; border-radius:26px; overflow:hidden; background:#14232B; color:#ECE6D8; border:1px solid rgba(127,127,127,.3); padding:18px 16px 20px; font-family:var(--ui); }
+  .ttl { font-size:20px; font-weight:700; margin:0 0 10px; }
+  .bk { font-size:12px; color:#9AA7AC; margin:0 0 6px; }
+  .card { position:relative; overflow:hidden; background:#1C3039; border-radius:16px; padding:14px; }
+  .ribbon { position:absolute; top:0; right:14px; width:11px; height:32px; background:#E2A84B; clip-path:polygon(0 0,100% 0,100% 100%,50% 82%,0 100%); }
+  .q { position:relative; font-family:var(--word); font-size:15px; background:#24363A; border-radius:10px; padding:9px 12px 9px 32px; margin:0 0 10px; line-height:1.7; }
+  .q svg { position:absolute; left:10px; top:12px; width:14px; height:14px; fill:#F1D9A8; }
+  .b { font-size:14px; color:#D5CFC2; margin:0; line-height:1.85; }
+  .who { font-size:11px; color:#9AA7AC; margin:14px 0 4px; }
+  .deep { background:#233B45; border-radius:14px; padding:12px 14px; font-family:var(--word); font-size:15px; line-height:1.75; }
+  .btn { display:flex; align-items:center; justify-content:center; min-height:46px; border-radius:999px; font-weight:700; font-size:15px; background:#E2A84B; color:#14232B; margin-top:14px; }
+  .tabs { display:flex; justify-content:space-around; margin-top:16px; font-size:11px; color:#9AA7AC; } .tabs b { color:#E2A84B; }
+
+  .s1 { --ui:"Zen Maru Gothic",sans-serif; --word:"Kiwi Maru",serif; }
+  .s2 { --ui:"Zen Kaku Gothic New",sans-serif; --word:"Zen Maru Gothic",sans-serif; }
+  .s3 { --ui:"M PLUS 2",sans-serif; --word:"Kiwi Maru",serif; }
+  .s4 { --ui:"Noto Sans JP",sans-serif; --word:"Klee One",cursive; }
+  .s5 { --ui:"Murecho",sans-serif; --word:"Zen Maru Gothic",sans-serif; }
+  .s7 { --ui:"Murecho",sans-serif; --word:"Kiwi Maru",serif; }
+  .sheet { margin-top:14px; background:#1C3039; border-radius:20px; padding:14px 16px 16px; }
+  .sheet h3 { margin:0 0 6px; font-size:20px; font-weight:700; line-height:1.4; } .sheet p { margin:0; font-size:13px; color:#9AA7AC; line-height:1.8; }
+  .sheet .btn { font-weight:500; font-size:16px; } .sheet .btn.sec { background:none; border:1.5px solid #ECE6D8; color:#ECE6D8; margin-top:8px; }
+  .list { display:grid; gap:8px; } .row { background:#1C3039; border-radius:14px; padding:12px 14px; } .row b { font-size:14px; font-weight:500; display:block; } .row span { font-size:12px; color:#D5CFC2; }
+  .catch { font-family:var(--word); font-size:21px; text-align:center; line-height:1.7; margin:4px 0 6px; }
+  .s8 { --ui:"Kiwi Maru",serif; --word:"Kiwi Maru",serif; }
+  .s8 .ttl, .s8 .btn, .s8 .sheet h3, .s8 .row b { font-weight:500; }
+  .s6 { --ui:"Zen Kaku Gothic New",sans-serif; --word:"Zen Old Mincho",serif; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>書体の見比べ：今／Murecho＋キウイ丸／すべてキウイ丸</h1>
+  <p class="lead">操作・本文を Murecho、本の言葉・AIの深掘り・キャッチコピーをキウイ丸にした見本です。左から、今の組み合わせ（Zen 丸ゴシック＋キウイ丸）、Murecho＋キウイ丸、すべてキウイ丸です。キウイ丸には太字がないため、すべてキウイ丸の列では、見出しやボタンを中太（500）で表示しています。同じ画面を上下に3つ並べています。</p>
+  <svg width="0" height="0" style="position:absolute"><defs><path id="qm" d="M3 13 C 3 8.5 5.2 5.2 9 4 L 9.8 5.6 C 7.7 6.6 6.6 8.2 6.5 10 H 9 V 16 H 3 Z M12.5 13 C 12.5 8.5 14.7 5.2 18.5 4 L 19.3 5.6 C 17.2 6.6 16.1 8.2 16 10 H 18.5 V 16 H 12.5 Z"/></defs></svg>
+  <div class="grid" id="g"></div>
+</div>
+<script>
+  var qm = '<svg viewBox="0 0 22 22"><use href="#qm"/></svg>';
+  var screens = [
+    ['気づきの詳細', '<p class="ttl">気づき</p><p class="bk">嫌われる勇気　P.142　10月18日</p><div class="card"><div class="ribbon"></div><p class="q">'+qm+'他者の課題には踏み込まない</p><p class="b">上司の機嫌を自分の責任だと思い込んで、会議で黙ってしまうことが多かった。それは上司の課題で、私が引き受けるものではないのかもしれない。</p></div><p class="who">AIからの深掘り</p><div class="deep">黙ってしまう直前、頭の中ではどんな言葉が浮かんでいますか？</div><span class="btn">AI提案を受ける</span>'],
+    ['気づき一覧と確認シート', '<p class="ttl">気づき一覧</p><div class="list"><div class="row"><b>嫌われる勇気</b><span>気づき 5件　最後に書いた日：今日</span></div><div class="row"><b>エッセンシャル思考</b><span>気づき 3件　最後に書いた日：10月20日</span></div></div><div class="sheet"><h3>このAI提案は削除されます</h3><p>深掘りと、入力した回答も削除されます。使った回数は戻りません。移動しますか？</p><span class="btn">回答を続ける</span><span class="btn sec">移動する</span></div>'],
+    ['ウェルカムページ', '<p class="catch">今夜の栞を、<br>明日の芽に。</p><p class="b" style="text-align:center;font-size:13px">心に残った気づきを書き留めると、<br>AIが問いかけ、次の一歩にしてくれます。</p><span class="btn">はじめる（新規登録）</span><span class="btn" style="background:none;border:1.5px solid #ECE6D8;color:#ECE6D8;margin-top:10px">ログイン</span>']
+  ];
+  document.getElementById('g').innerHTML = screens.map(function(sc){
+    return ['s1','s7','s8'].map(function(cls){
+      return '<section class="opt"><div class="phone '+cls+'">'+sc[1]+'</div><h2>'+sc[0]+'：'+({s1:'今（Zen 丸ゴシック＋キウイ丸）',s7:'Murecho＋キウイ丸',s8:'すべてキウイ丸'})[cls]+'</h2></section>';
+    }).join('');
+  }).join('');
+</script>
+</body>
+</html>
