@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SHIORIME 引用の見せ方</title>
+<link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&family=Kiwi+Maru:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root { --page-bg:#E3E5E3; --page-ink:#23272A; --page-sub:#5D6368;
+          --maru:"Zen Maru Gothic","Hiragino Maru Gothic ProN",sans-serif; --kiwi:"Kiwi Maru","Hiragino Maru Gothic ProN",serif; }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --page-bg:#1A1C1E; --page-ink:#E6E6E2; --page-sub:#A2A7AC; } }
+  :root[data-theme="dark"] { --page-bg:#1A1C1E; --page-ink:#E6E6E2; --page-sub:#A2A7AC; }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--page-bg); color:var(--page-ink); font-family:var(--maru); line-height:1.6; }
+  .wrap { max-width:1100px; margin:0 auto; padding:32px 16px 56px; }
+  h1 { font-size:22px; margin:0 0 6px; } .lead { font-size:14px; color:var(--page-sub); margin:0 0 24px; max-width:56em; }
+  .pat { margin:0 0 36px; }
+  .pat h2 { font-size:17px; margin:0 0 2px; } .pat > p { font-size:13px; color:var(--page-sub); margin:0 0 12px; max-width:56em; }
+  .pair { display:grid; gap:16px; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); }
+  .stage { border-radius:20px; padding:16px; }
+
+  .night { --bg:#14232B; --card:#1C3039; --shade:#233B45; --text:#ECE6D8; --soft:#D5CFC2; --muted:#9AA7AC; --on:#E2A84B; --quote:#F1D9A8; --paper:#24363A; --mark:rgba(226,168,75,.28); --book:#ECE6D8; }
+  .morning { --bg:#FBF7EC; --card:#FFFFFF; --shade:#F3EBD6; --text:#2B3238; --soft:#454D54; --muted:#62686E; --on:#8A5A12; --quote:#8A5A12; --paper:#FBF3E1; --mark:rgba(232,162,58,.32); --book:#2B3238; }
+  .stage { background:var(--bg); color:var(--text); }
+
+  .note { background:var(--card); border-radius:16px; padding:14px 16px 12px; max-width:320px; }
+  .meta { display:flex; justify-content:space-between; font-size:11px; color:var(--muted); margin:0 0 8px; }
+  .b { font-size:13px; color:var(--soft); margin:0; line-height:1.75; }
+  .ai { display:inline-flex; align-items:center; gap:4px; font-size:11px; color:var(--soft); margin-top:8px; } .ai svg { width:14px; height:14px; color:var(--on); }
+  .fill { fill:currentColor; }
+
+  /* 今の案 */
+  .p0 .q { font-family:var(--kiwi); color:var(--quote); font-size:14px; margin:0 0 6px; }
+
+  /* A. マーカー：本に蛍光ペンを引いたように */
+  .pA .q { font-family:var(--kiwi); font-size:14.5px; color:var(--text); margin:0 0 8px; line-height:1.8; }
+  .pA .q span { background:linear-gradient(transparent 58%, var(--mark) 58%); padding:0 2px; -webkit-box-decoration-break:clone; box-decoration-break:clone; }
+
+  /* B. 紙片：本から切り取った紙を貼ったように */
+  .pB .q { position:relative; font-family:var(--kiwi); font-size:14px; color:var(--text); background:var(--paper); border-radius:10px; padding:10px 12px 10px 34px; margin:0 0 10px; line-height:1.7; }
+  .pB .q svg { position:absolute; left:10px; top:11px; width:16px; height:16px; color:var(--on); }
+
+  /* C. 大きな引用符：「」を飾りとして大きく */
+  .pC .q { position:relative; font-family:var(--kiwi); font-size:14.5px; color:var(--text); margin:2px 0 10px; padding:10px 6px 4px 22px; line-height:1.75; }
+  .pC .q::before { content:"「"; position:absolute; left:-4px; top:-8px; font-size:34px; line-height:1; color:var(--on); font-family:var(--kiwi); }
+  .pC .q::after { content:"」"; font-size:20px; line-height:0; color:var(--on); margin-left:2px; position:relative; top:6px; }
+
+  /* D. 栞のラベル：「本の言葉」と栞のアイコンを添える */
+  .pD .lab { display:inline-flex; align-items:center; gap:4px; font-size:11px; font-weight:700; color:var(--on); margin:0 0 4px; }
+  .pD .lab svg { width:12px; height:14px; }
+  .pD .q { font-family:var(--kiwi); font-size:14.5px; color:var(--text); margin:0 0 8px; line-height:1.75; }
+  .pD .sep { height:1px; background:var(--shade); margin:0 0 8px; }
+
+  /* E. 2つの組み合わせ：栞のラベル＋マーカー */
+  .pE .lab { display:inline-flex; align-items:center; gap:4px; font-size:11px; font-weight:700; color:var(--on); margin:0 0 4px; }
+  .pE .lab svg { width:12px; height:14px; }
+  .pE .q { font-family:var(--kiwi); font-size:14.5px; color:var(--text); margin:0 0 8px; line-height:1.8; }
+  .pE .q span { background:linear-gradient(transparent 58%, var(--mark) 58%); padding:0 2px; -webkit-box-decoration-break:clone; box-decoration-break:clone; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>引用（本の言葉）の見せ方</h1>
+  <p class="lead">気づきのカードで、引用を「本から持ってきた言葉」だとわかるように見せる案です。左側の線（避ける表現）・絵文字・Lucide は使っていません。どの案も、夜と朝の両方で並べています。</p>
+
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <defs>
+      <g id="sprout"><path d="M12 21 V 11" stroke="currentColor" stroke-width="2" stroke-linecap="round" fill="none"/><path class="fill" d="M12 13 C 11.2 8.5 7.5 6.5 3.5 7 C 4.2 11.2 7.8 13.4 12 13 Z"/><path class="fill" d="M12 11.5 C 12.8 7 16.5 4.5 20.5 5 C 19.8 9.4 16.2 11.9 12 11.5 Z"/></g>
+      <g id="ribbon"><path class="fill" d="M2 0 H 10 C 11.1 0 12 .9 12 2 V 14 L 6 10.5 L 0 14 V 2 C 0 .9 .9 0 2 0 Z"/></g>
+      <g id="qmark"><path class="fill" d="M3 13 C 3 8.5 5.2 5.2 9 4 L 9.8 5.6 C 7.7 6.6 6.6 8.2 6.5 10 H 9 V 16 H 3 Z M12.5 13 C 12.5 8.5 14.7 5.2 18.5 4 L 19.3 5.6 C 17.2 6.6 16.1 8.2 16 10 H 18.5 V 16 H 12.5 Z" transform="translate(0 2)"/></g>
+    </defs>
+  </svg>
+
+  <div id="out"></div>
+</div>
+<script>
+  var Q = '他者の課題には踏み込まない', B = '上司の機嫌を自分の責任だと思い込んで、会議で黙ってしまうことが多かった。';
+  var meta = '<p class="meta"><span>P.142</span><span>今日</span></p>', ai = '<span class="ai"><svg viewBox="0 0 24 24"><use href="#sprout"/></svg>次の一歩 2件</span>';
+  var lab = '<span class="lab"><svg viewBox="0 0 12 14"><use href="#ribbon"/></svg>本の言葉</span>';
+  var pats = [
+    ['p0','今の案：色と書体だけ','「」で囲み、色と書体（キウイ丸）を変えるだけ。比べるための基準です。', '<p class="q">「'+Q+'」</p><p class="b">'+B+'</p>'],
+    ['pA','A. マーカー','本に蛍光ペンで線を引いたように、文字の下半分に灯りの色を薄く重ねます。読書の動作そのものなので、意味が一目で伝わります。引用の文字は本文と同じ色に戻し、マーカーで目立たせます。', '<p class="q"><span>'+Q+'</span></p><p class="b">'+B+'</p>'],
+    ['pB','B. 紙片','本から切り取った紙を貼ったように、引用だけを少し色の違う紙の上に置き、引用符のアイコンを添えます。本文との区切りが一番はっきりします。', '<p class="q"><svg viewBox="0 0 22 22"><use href="#qmark"/></svg>'+Q+'</p><p class="b">'+B+'</p>'],
+    ['pC','C. 大きなかぎかっこ','「」を飾りとして大きく、灯りの色で描きます。日本語の本の引用らしさが出ます。', '<p class="q">'+Q+'</p><p class="b">'+B+'</p>'],
+    ['pD','D. 栞のラベル','引用の上に、栞のアイコンと「本の言葉」という小さな見出しを付け、本文との間に細い区切り線を入れます。何が引用かを文字ではっきり伝えます。', lab+'<p class="q">'+Q+'</p><div class="sep"></div><p class="b">'+B+'</p>'],
+    ['pE','E. 栞のラベル＋マーカー','D の見出しと、A のマーカーを組み合わせます。', lab+'<p class="q"><span>'+Q+'</span></p><p class="b">'+B+'</p>']
+  ];
+  document.getElementById('out').innerHTML = pats.map(function(p){
+    var card = '<div class="note '+p[0]+'">'+meta+p[3]+ai+'</div>';
+    return '<section class="pat"><h2>'+p[1]+(p[0]==='pB'?'（採用）':'')+'</h2><p>'+p[2]+'</p><div class="pair"><div class="stage night">'+card+'</div><div class="stage morning">'+card+'</div></div></section>';
+  }).join('');
+</script>
+</body>
+</html>
