@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SHIORIME 確認シートの書体</title>
+<link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&family=Kiwi+Maru:wght@400;500&family=M+PLUS+Rounded+1c:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root { --page-bg:#E3E5E3; --page-ink:#23272A; --page-sub:#5D6368;
+          --zen:"Zen Maru Gothic","Hiragino Maru Gothic ProN",sans-serif; --kiwi:"Kiwi Maru","Hiragino Maru Gothic ProN",serif; --mplus:"M PLUS Rounded 1c","Hiragino Maru Gothic ProN",sans-serif; }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --page-bg:#1A1C1E; --page-ink:#E6E6E2; --page-sub:#A2A7AC; } }
+  :root[data-theme="dark"] { --page-bg:#1A1C1E; --page-ink:#E6E6E2; --page-sub:#A2A7AC; }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--page-bg); color:var(--page-ink); font-family:var(--zen); line-height:1.6; }
+  .wrap { max-width:1240px; margin:0 auto; padding:32px 16px 56px; }
+  h1 { font-size:22px; margin:0 0 6px; } .lead { font-size:14px; color:var(--page-sub); margin:0 0 24px; max-width:56em; }
+  .grid { display:grid; gap:28px 20px; grid-template-columns:repeat(auto-fit,minmax(270px,1fr)); }
+  .opt h2 { font-size:16px; margin:12px 0 2px; } .opt p.c { font-size:13px; color:var(--page-sub); margin:0; }
+  .stage { position:relative; height:330px; border-radius:24px; overflow:hidden; background:#14232B; max-width:300px; margin:0 auto; }
+  .dim { position:absolute; inset:0; background:rgba(5,10,13,.62); }
+  .sheet { position:absolute; left:0; right:0; bottom:0; background:#1C3039; color:#ECE6D8; border-radius:20px 20px 0 0; padding:10px 18px 20px; }
+  .grab { width:40px; height:5px; border-radius:3px; background:#233B45; margin:0 auto 12px; }
+  .sheet h3 { margin:0 0 8px; font-size:17px; font-weight:700; line-height:1.5; }
+  .sheet .m { margin:0 0 6px; font-size:14px; color:#D5CFC2; line-height:1.8; }
+  .btn { display:flex; align-items:center; justify-content:center; min-height:48px; border-radius:999px; font-weight:700; font-size:15px; margin-top:10px; }
+  .btn.primary { background:#E2A84B; color:#14232B; } .btn.sec { border:1.5px solid #ECE6D8; }
+
+  .A h3, .A .m, .A .btn { font-family:var(--zen); }
+  .B h3 { font-family:var(--kiwi); font-weight:500; font-size:18px; } .B .m, .B .btn { font-family:var(--zen); }
+  .C h3 { font-family:var(--kiwi); font-weight:500; font-size:18px; } .C .m { font-family:var(--kiwi); } .C .btn { font-family:var(--zen); }
+  .D h3 { font-family:var(--zen); font-size:20px; } .D .m { font-family:var(--zen); font-size:13px; color:#9AA7AC; } .D .btn { font-family:var(--zen); font-weight:500; font-size:16px; }
+  .E h3, .E .m, .E .btn { font-family:var(--mplus); }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>確認シートの書体の比較</h1>
+  <p class="lead">AI提案で、回答を送る前に離れようとしたときのシートです。今の案（A）は、見出し・本文・ボタンがすべて「Zen 丸ゴシック」です。B〜D は、決めている2つの書体（Zen 丸ゴシックとキウイ丸）の組み合わせや太さを変えた案、E は別の丸ゴシック（M PLUS Rounded 1c）の参考です。</p>
+  <div class="grid" id="g"></div>
+</div>
+<script>
+  var pats = [
+    ['A','A. 今の案：すべて Zen 丸ゴシック','見出し・本文は Zen 丸ゴシック、太さで差をつけるだけ。'],
+    ['B','B. 見出しだけキウイ丸','見出しを、本の言葉やAIの深掘りと同じキウイ丸にする。やわらかく、語りかける印象になる。'],
+    ['C','C. 見出しと本文をキウイ丸','説明の文までキウイ丸にする。ボタンは操作なので Zen 丸ゴシックのまま。'],
+    ['D','D. Zen 丸ゴシックで強弱を強める（採用）','見出しを大きく、本文を小さく控えめな色に、ボタンの文字を少し細く。書体は変えずに、読む順番をはっきりさせる。'],
+    ['E','E. 参考：M PLUS Rounded 1c','別の丸ゴシック。線が細めで、すっきりした印象。採用すると書体が3つになる。']
+  ];
+  document.getElementById('g').innerHTML = pats.map(function(p){
+    return '<section class="opt"><div class="stage"><div class="dim"></div><div class="sheet '+p[0]+'"><div class="grab"></div><h3>このAI提案は削除されます</h3><p class="m">深掘りと、入力した回答も削除されます。使った回数は戻りません。移動しますか？</p><span class="btn primary">回答を続ける</span><span class="btn sec">移動する</span></div></div><h2>'+p[1]+'</h2><p class="c">'+p[2]+'</p></section>';
+  }).join('');
+</script>
+</body>
+</html>

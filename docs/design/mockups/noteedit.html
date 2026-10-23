@@ -39,12 +39,14 @@
   .page { display:flex; align-items:center; gap:6px; width:132px; } .page span { color:var(--muted); font-size:14px; }
   .area { min-height:150px; }
   .msg { display:flex; gap:6px; color:var(--err); font-size:12px; margin-top:6px; line-height:1.6; } .msg svg { width:16px; height:16px; flex:none; margin-top:1px; }
+  .warn { font-size:11px; color:var(--muted); margin:8px 0 0; line-height:1.6; }
   .info { font-size:12px; color:var(--muted); background:var(--card); border-radius:10px; padding:8px 12px; margin:0 0 6px; }
   .line { fill:none; stroke:currentColor; stroke-width:1.9; stroke-linecap:round; stroke-linejoin:round; } .fill { fill:currentColor; }
   .dim { position:absolute; inset:0; background:var(--dim); }
   .sheet { position:absolute; left:0; right:0; bottom:0; background:var(--card); border-radius:20px 20px 0 0; padding:10px 18px 20px; }
   .grab { width:40px; height:5px; border-radius:3px; background:var(--shade); margin:0 auto 12px; }
-  .sheet h3 { margin:0 0 8px; font-size:17px; } .sheet p { margin:0 0 6px; font-size:14px; color:var(--soft); line-height:1.8; }
+  .sheet h3 { margin:0 0 8px; font-size:20px; line-height:1.4; } .sheet p { margin:0 0 6px; font-size:13px; color:var(--muted); line-height:1.8; }
+  .sheet .btn { font-weight:500; font-size:16px; }
   .btn { display:flex; align-items:center; justify-content:center; min-height:48px; border-radius:999px; font-weight:700; font-size:15px; margin-top:10px; }
   .btn.primary { background:var(--accent); color:var(--on-accent); } .btn.sec { border:1.5px solid var(--text); }
 </style>
@@ -78,12 +80,12 @@
   function area(v, c, cls, bad){ return '<div class="row"><span class="lab">気づき<b>必須</b></span><span class="cnt'+(bad?' bad':'')+'">'+c+' / 1,000</span></div><div class="field area'+(cls||'')+(v?'':' ph')+'">'+(v||'読んで考えたこと、自分の経験と結びついたことを書きましょう。')+'</div>'; }
   var body1 = '上司の機嫌を自分の責任だと思い込んで、会議で黙ってしまうことが多かった。でも、それは上司の課題であって、私が引き受けるものではないのかもしれない。';
   var html = {
-    new: hd('気づきを書く') + '<div class="body">' + book + quote() + page() + area('', 0, ' focus') + '</div>',
-    typing: hd('気づきを書く') + '<div class="body">' + book + quote('他者の課題には踏み込まない', 13) + page('142') + area(body1, 72, ' focus') + '</div>',
+    new: hd('気づきを書く') + '<div class="body">' + book + quote() + page() + area('', 0, ' focus') + '<p class="warn">入力内容は、AI提案を受けるときにAI（OpenAI）に送信されます。個人情報は書かないでください。</p></div>',
+    typing: hd('気づきを書く') + '<div class="body">' + book + quote('他者の課題には踏み込まない', 13) + page('142') + area(body1, 72, ' focus') + '<p class="warn">入力内容は、AI提案を受けるときにAI（OpenAI）に送信されます。個人情報は書かないでください。</p></div>',
     error: hd('気づきを書く') + '<div class="body">' + book + quote('他者の課題には踏み込まない', 13) + '<div class="row"><span class="lab">ページ<em>任意</em></span></div><div class="field page bad"><span>P.</span>12000</div><div class="msg"><svg viewBox="0 0 24 24" class="line"><use href="#alert"/></svg>1〜9999の数字で入力してください</div>' +
       '<div class="row"><span class="lab">気づき<b>必須</b></span><span class="cnt">0 / 1,000</span></div><div class="field area bad ph" style="min-height:90px"></div><div class="msg"><svg viewBox="0 0 24 24" class="line"><use href="#alert"/></svg>気づきを入力してください</div></div>',
     leave: hd('気づきを書く') + '<div class="body">' + book + quote('他者の課題には踏み込まない', 13) + page('142') + area(body1, 72) + '</div><div class="dim"></div><div class="sheet" role="dialog"><div class="grab"></div><h3>書きかけの気づきを破棄しますか？</h3><p>保存していない内容は失われます。</p><span class="btn primary">書き続ける</span><span class="btn sec">破棄して閉じる</span></div>',
-    edit: hd('気づきを編集') + '<div class="body">' + book + '<p class="info">編集しても、次の一歩（AI提案）はそのまま残ります。</p>' + quote('他者の課題には踏み込まない', 13) + page('142') + area(body1, 72) + '</div>'
+    edit: hd('気づきを編集') + '<div class="body">' + book + '<p class="info">編集しても、次の一歩（AI提案）はそのまま残ります。</p>' + quote('他者の課題には踏み込まない', 13) + page('142') + area(body1, 72) + '<p class="warn">入力内容は、AI提案を受けるときにAI（OpenAI）に送信されます。個人情報は書かないでください。</p></div>'
   };
   document.querySelectorAll('.phone').forEach(function(p){ p.innerHTML = html[p.dataset.s]; });
 </script>

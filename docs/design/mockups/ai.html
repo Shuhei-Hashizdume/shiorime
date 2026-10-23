@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SHIORIME AI提案の画面案</title>
+<link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&family=Kiwi+Maru:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root { --page-bg:#E3E5E3; --page-ink:#23272A; --page-sub:#5D6368;
+          --maru:"Zen Maru Gothic","Hiragino Maru Gothic ProN",sans-serif; --kiwi:"Kiwi Maru","Hiragino Maru Gothic ProN",serif; }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --page-bg:#1A1C1E; --page-ink:#E6E6E2; --page-sub:#A2A7AC; } }
+  :root[data-theme="dark"] { --page-bg:#1A1C1E; --page-ink:#E6E6E2; --page-sub:#A2A7AC; }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--page-bg); color:var(--page-ink); font-family:var(--maru); line-height:1.6; }
+  .wrap { max-width:1240px; margin:0 auto; padding:32px 16px 56px; }
+  h1 { font-size:22px; margin:0 0 6px; } .lead { font-size:14px; color:var(--page-sub); margin:0 0 24px; max-width:56em; }
+  .grid { display:grid; gap:32px 20px; grid-template-columns:repeat(auto-fit,minmax(270px,1fr)); }
+  .opt > h2 { font-size:16px; margin:12px 0 2px; } .opt > p { font-size:13px; color:var(--page-sub); margin:0; }
+
+  .night { --bg:#14232B; --card:#1C3039; --shade:#233B45; --text:#ECE6D8; --soft:#D5CFC2; --muted:#9AA7AC; --accent:#E2A84B; --on-accent:#14232B; --on:#E2A84B; --quote:#F1D9A8; --paper:#24363A; --err:#EE9A8F; --dim:rgba(5,10,13,.62); }
+  .phone { position:relative; width:100%; max-width:300px; height:640px; margin:0 auto; border-radius:28px; overflow:hidden; display:flex; flex-direction:column;
+           background:var(--bg); color:var(--text); border:1px solid rgba(127,127,127,.3); }
+  .top { display:flex; align-items:center; padding:12px 8px 4px; } .top span { width:44px; height:44px; display:flex; align-items:center; justify-content:center; } .top svg { width:24px; height:24px; }
+  .top h3 { margin:0; font-size:16px; }
+  .body { flex:1; overflow:hidden; padding:4px 16px 16px; }
+  .who { font-size:11px; color:var(--muted); margin:12px 0 4px; }
+  .mine { background:var(--card); border-radius:14px; padding:12px 14px; }
+  .mine .bk { font-size:11px; color:var(--muted); margin:0 0 6px; }
+  .q { position:relative; font-family:var(--kiwi); font-size:13px; background:var(--paper); border-radius:10px; padding:8px 10px 8px 30px; margin:0 0 8px; line-height:1.65; }
+  .q svg { position:absolute; left:9px; top:10px; width:14px; height:14px; color:var(--quote); }
+  .mine .b { font-size:12.5px; color:var(--soft); margin:0; line-height:1.75; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
+  .deep { background:var(--shade); border-radius:14px; padding:14px; }
+  .deep p { font-family:var(--kiwi); font-size:15px; margin:0; line-height:1.75; }
+  .ans { background:var(--card); border-radius:14px; padding:12px 14px; font-size:13px; color:var(--soft); line-height:1.75; }
+  .wait { display:flex; flex-direction:column; align-items:center; text-align:center; padding:26px 8px 8px; }
+  .wait svg { width:44px; height:44px; color:var(--on); }
+  @media (prefers-reduced-motion: no-preference) { .wait svg { animation:grow 2.4s ease-in-out infinite; transform-origin:50% 90%; } }
+  @keyframes grow { 0%,100% { transform:scale(.9); opacity:.7; } 50% { transform:scale(1.05); opacity:1; } }
+  .wait b { font-family:var(--kiwi); font-weight:500; font-size:15px; margin-top:10px; }
+  .wait span { font-size:12px; color:var(--muted); margin-top:2px; }
+  .row { display:flex; justify-content:space-between; align-items:baseline; margin:14px 0 6px; }
+  .lab { font-size:13px; color:var(--soft); } .cnt { font-size:11px; color:var(--muted); }
+  .field { background:var(--card); border-radius:12px; padding:11px 14px; font-size:14px; border:1.5px solid var(--on); min-height:96px; line-height:1.75; }
+  .warn { font-size:11px; color:var(--muted); margin:6px 0 0; line-height:1.6; }
+  .btn { display:flex; align-items:center; justify-content:center; gap:6px; min-height:48px; border-radius:999px; font-weight:700; font-size:15px; margin-top:12px; }
+  .btn.primary { background:var(--accent); color:var(--on-accent); } .btn.sec { border:1.5px solid var(--text); }
+  .plans { list-style:none; margin:0; padding:0; counter-reset:p; }
+  .plans li { counter-increment:p; position:relative; background:var(--card); border-radius:14px; padding:12px 14px 12px 46px; margin-bottom:8px; font-size:14px; line-height:1.7; }
+  .plans li::before { content:counter(p); position:absolute; left:14px; top:12px; width:22px; height:22px; border-radius:50%; background:var(--tint,rgba(226,168,75,.16)); border:1px solid var(--on); color:var(--on); font-size:12px; font-weight:700; display:grid; place-items:center; }
+  .saved { display:flex; align-items:center; justify-content:center; gap:6px; font-size:12px; color:var(--soft); margin-top:8px; }
+  .saved svg { width:16px; height:16px; color:#8FC1A0; }
+  .alert { border:1.5px solid var(--err); border-radius:14px; padding:12px 14px; margin-top:12px; }
+  .alert .r { display:flex; gap:8px; color:var(--err); font-weight:700; font-size:14px; } .alert .r svg { width:20px; height:20px; flex:none; }
+  .alert p { margin:6px 0 0; font-size:12.5px; color:var(--soft); }
+  .center { flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:0 26px 60px; }
+  .center h4 { font-family:var(--kiwi); font-weight:500; font-size:17px; margin:0 0 6px; } .center p { font-size:13px; color:var(--soft); margin:0 0 10px; line-height:1.8; }
+  .center .btn { padding:0 24px; }
+  .line { fill:none; stroke:currentColor; stroke-width:1.9; stroke-linecap:round; stroke-linejoin:round; } .fill { fill:currentColor; }
+  .dim { position:absolute; inset:0; background:var(--dim); }
+  .sheet { position:absolute; left:0; right:0; bottom:0; background:var(--card); border-radius:20px 20px 0 0; padding:10px 18px 20px; }
+  .grab { width:40px; height:5px; border-radius:3px; background:var(--shade); margin:0 auto 12px; }
+  .sheet h3 { margin:0 0 8px; font-size:20px; line-height:1.4; } .sheet p { margin:0 0 6px; font-size:13px; color:var(--muted); line-height:1.8; }
+  .sheet .btn { font-weight:500; font-size:16px; }
+  .btn.danger { background:var(--err); color:var(--bg); }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>AI提案の画面案</h1>
+  <p class="lead">気づきの詳細の「AI提案を受ける」から移る画面です。深掘り（AIからの質問）→ 回答 → 次の一歩、の流れを1つの画面で順に進めます。途中で離れると消えてしまうため、共通メニューは出しません。文章は仮のものです。</p>
+
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <defs>
+      <g id="qmark"><path class="fill" d="M3 13 C 3 8.5 5.2 5.2 9 4 L 9.8 5.6 C 7.7 6.6 6.6 8.2 6.5 10 H 9 V 16 H 3 Z M12.5 13 C 12.5 8.5 14.7 5.2 18.5 4 L 19.3 5.6 C 17.2 6.6 16.1 8.2 16 10 H 18.5 V 16 H 12.5 Z" transform="translate(0 2)"/></g>
+      <g id="close" class="line"><path d="M6 6 L 18 18 M18 6 L 6 18"/></g>
+      <g id="back" class="line"><path d="M14.5 5.5 L 8 12 L 14.5 18.5"/></g>
+      <g id="sprout"><path d="M12 21 V 11" stroke="currentColor" stroke-width="2" stroke-linecap="round" fill="none"/><path class="fill" d="M12 13 C 11.2 8.5 7.5 6.5 3.5 7 C 4.2 11.2 7.8 13.4 12 13 Z"/><path class="fill" d="M12 11.5 C 12.8 7 16.5 4.5 20.5 5 C 19.8 9.4 16.2 11.9 12 11.5 Z"/></g>
+      <g id="check" class="line" style="stroke-width:2.4"><circle cx="12" cy="12" r="9"/><path d="M8 12.5 L 11 15 L 16 9.5"/></g>
+      <g id="alert" class="line"><circle cx="12" cy="12" r="9"/><path d="M12 7.5 V 12.8"/><path d="M12 16.3 V 16.4"/></g>
+    </defs>
+  </svg>
+
+  <div class="grid">
+    <section class="opt"><div class="phone night" data-s="s1"></div><h2>1. 深掘りの作成中</h2><p>あなたの気づきを上に出し、その下で芽がゆっくり育つ動き（動きを減らす設定の人には動かさない）。待ち時間の目安も伝える。</p></section>
+    <section class="opt"><div class="phone night" data-s="s2"></div><h2>2. 深掘りに回答する</h2><p>AIからの深掘りは「机の影」の色とキウイ丸。回答は500文字まで。外部AIに送られることを入力欄の下に書く。</p></section>
+    <section class="opt"><div class="phone night" data-s="s3"></div><h2>3. 次の一歩の作成中</h2><p>深掘りと自分の回答を残したまま待つ。この段階では離れても作成は続き、完了すれば保存されることを伝える。</p></section>
+    <section class="opt"><div class="phone night" data-s="s4"></div><h2>4. 完了（次の一歩）</h2><p>次の一歩を1〜3個、番号付きのカードで。保存済みであることを伝え、「気づきに戻る」で気づきの詳細へ。</p></section>
+    <section class="opt"><div class="phone night" data-s="s5"></div><h2>5. 次の一歩の作成に失敗</h2><p>回答は残したまま、「もう一度送る（回数は使いません）」。states.html で決めた表示と同じ。</p></section>
+    <section class="opt"><div class="phone night" data-s="s6"></div><h2>6. 回答を送る前に離れようとしたとき</h2><p>要件定義書の確認文を使う。押してほしい「回答を続ける」を塗りつぶしにする。</p></section>
+    <section class="opt"><div class="phone night" data-s="s7"></div><h2>7. 終了したAI提案を開いたとき</h2><p>再読み込み・戻る・URLの直接入力で、回答前のAI提案を開いた場合。</p></section>
+    <section class="opt"><div class="phone night" data-s="s8"></div><h2>8. 見返す（気づきの詳細の「深掘りと回答も見る」）</h2><p>完了したAI提案の全体を、上から気づき → 深掘り → 回答 → 次の一歩の順に表示する。戻るボタンで気づきの詳細へ。</p></section>
+  </div>
+</div>
+<script>
+  function hd(icon, t){ return '<div class="top"><span aria-label="'+(icon==='back'?'戻る':'閉じる')+'"><svg viewBox="0 0 24 24"><use href="#'+icon+'"/></svg></span><h3>'+t+'</h3></div>'; }
+  var mine = '<p class="who">あなたの気づき</p><div class="mine"><p class="bk">嫌われる勇気　P.142</p><p class="q"><svg viewBox="0 0 22 22"><use href="#qmark"/></svg>他者の課題には踏み込まない</p><p class="b">上司の機嫌を自分の責任だと思い込んで、会議で黙ってしまうことが多かった。でも、それは上司の課題であって…</p></div>';
+  var deep = '<p class="who">AIからの深掘り</p><div class="deep"><p>黙ってしまう直前、頭の中ではどんな言葉が浮かんでいますか？</p></div>';
+  var ans = '<p class="who">あなたの回答</p><div class="ans">無能だと思われたくない、という焦りだと思う。発言して的外れだったら評価が下がる気がする。</div>';
+  function wait(t, s){ return '<div class="wait"><svg viewBox="0 0 24 24"><use href="#sprout"/></svg><b>'+t+'</b><span>'+s+'</span></div>'; }
+  var plans = '<p class="who">次の一歩</p><ol class="plans"><li>次の会議で、結論から一言だけ発言する</li><li>発言したあとの気持ちを1行メモする</li><li>1週間後、メモを見返して変化を確かめる</li></ol>';
+  var s2body = mine + deep + '<div class="row"><span class="lab">回答</span><span class="cnt">41 / 500</span></div><div class="field">無能だと思われたくない、という焦りだと思う。発言して的外れだったら…</div><p class="warn">入力内容はAI（OpenAI）に送信されます。個人情報は書かないでください。</p><span class="btn primary">回答して次の一歩を受け取る</span>';
+  var html = {
+    s1: hd('close','AI提案') + '<div class="body">' + mine + wait('AIが質問を考えています…','最大1分ほどかかります') + '</div>',
+    s2: hd('close','AI提案') + '<div class="body" style="padding-top:0">' + s2body + '</div>',
+    s3: hd('close','AI提案') + '<div class="body" style="padding-top:0">' + deep + ans + wait('AIが次の一歩を考えています…','最大1分ほどかかります。この画面を離れても作成は続き、<br>完了すると気づきの詳細に表示されます。') + '</div>',
+    s4: hd('close','AI提案') + '<div class="body" style="padding-top:0">' + deep + ans + plans + '<span class="btn primary">気づきに戻る</span><p class="saved"><svg viewBox="0 0 24 24"><use href="#check"/></svg>この次の一歩は保存されています</p></div>',
+    s5: hd('close','AI提案') + '<div class="body" style="padding-top:0">' + deep + ans + '<div class="alert"><div class="r"><svg viewBox="0 0 24 24" class="line"><use href="#alert"/></svg>次の一歩を作成できませんでした</div><p>時間をおいて、もう一度お試しください。</p></div><span class="btn primary">もう一度送る（回数は使いません）</span></div>',
+    s6: hd('close','AI提案') + '<div class="body" style="padding-top:0">' + s2body + '</div><div class="dim"></div><div class="sheet" role="dialog"><div class="grab"></div><h3>このAI提案は削除されます</h3><p>深掘りと、入力した回答も削除されます。使った回数は戻りません。移動しますか？</p><span class="btn primary">回答を続ける</span><span class="btn sec">移動する</span></div>',
+    s7: hd('close','AI提案') + '<div class="center"><h4>このAI提案は終了しました</h4><p>回答を送る前に画面を離れたため、<br>このAI提案は削除されました。</p><span class="btn primary">気づきに戻る</span></div>',
+    s8: hd('back','10月20日のAI提案') + '<div class="body" style="padding-top:0">' + mine + deep + ans + '</div>'
+  };
+  document.querySelectorAll('.phone').forEach(function(p){ p.innerHTML = html[p.dataset.s]; });
+</script>
+</body>
+</html>
