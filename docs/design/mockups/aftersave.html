@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SHIORIME 保存したあとの画面</title>
+<link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&family=Kiwi+Maru:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root { --page-bg:#E3E5E3; --page-ink:#23272A; --page-sub:#5D6368;
+          --maru:"Zen Maru Gothic","Hiragino Maru Gothic ProN",sans-serif; --kiwi:"Kiwi Maru","Hiragino Maru Gothic ProN",serif; }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --page-bg:#1A1C1E; --page-ink:#E6E6E2; --page-sub:#A2A7AC; } }
+  :root[data-theme="dark"] { --page-bg:#1A1C1E; --page-ink:#E6E6E2; --page-sub:#A2A7AC; }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--page-bg); color:var(--page-ink); font-family:var(--maru); line-height:1.6; }
+  .wrap { max-width:1240px; margin:0 auto; padding:32px 16px 56px; }
+  h1 { font-size:22px; margin:0 0 6px; } .lead { font-size:14px; color:var(--page-sub); margin:0 0 24px; max-width:52em; }
+  .grid { display:grid; gap:32px 20px; grid-template-columns:repeat(auto-fit,minmax(270px,1fr)); }
+  .opt > h2 { font-size:16px; margin:12px 0 2px; } .opt > p { font-size:13px; color:var(--page-sub); margin:0; }
+
+  .night { --bg:#14232B; --card:#1C3039; --shade:#233B45; --text:#ECE6D8; --soft:#D5CFC2; --muted:#9AA7AC; --accent:#E2A84B; --on-accent:#14232B; --on:#E2A84B; --quote:#F1D9A8; --paper:#24363A; --err:#EE9A8F; --tabbar:#101C22; --line:#101C22; --dim:rgba(5,10,13,.62); }
+  .phone { position:relative; width:100%; max-width:300px; height:640px; margin:0 auto; border-radius:28px; overflow:hidden; display:flex; flex-direction:column;
+           background:var(--bg); color:var(--text); border:1px solid rgba(127,127,127,.3); }
+  .top { display:flex; align-items:center; justify-content:space-between; padding:12px 8px 0; } .top span { width:44px; height:44px; display:flex; align-items:center; justify-content:center; } .top svg { width:24px; height:24px; }
+  .body { flex:1; overflow:hidden; padding:0 16px; }
+  .book { display:flex; gap:10px; align-items:center; margin:0 0 10px; }
+  .book .cv { width:30px; height:45px; border-radius:3px; background:#3E6A7A; flex:none; }
+  .book b { font-size:14px; display:block; line-height:1.4; } .book span { font-size:11px; color:var(--muted); }
+  .note { position:relative; overflow:hidden; background:var(--card); border-radius:16px; padding:16px; }
+  .ribbon { position:absolute; top:0; right:16px; width:12px; height:36px; background:var(--on); clip-path:polygon(0 0,100% 0,100% 100%,50% 82%,0 100%); }
+  .q { position:relative; font-family:var(--kiwi); color:var(--text); font-size:15px; background:var(--paper); border-radius:10px; padding:10px 12px 10px 34px; margin:6px 0 12px; line-height:1.7; }
+  .q svg { position:absolute; left:10px; top:12px; width:16px; height:16px; color:var(--quote); }
+  .b { font-size:14px; color:var(--soft); margin:0; line-height:1.85; }
+  .sec { font-size:13px; font-weight:700; margin:18px 0 8px; display:flex; justify-content:space-between; align-items:baseline; }
+  .sec span { font-weight:400; font-size:12px; color:var(--muted); }
+  .btn { display:flex; align-items:center; justify-content:center; gap:6px; min-height:48px; border-radius:999px; font-weight:700; font-size:15px; }
+  .btn svg { width:20px; height:20px; }
+  .btn.primary { background:var(--accent); color:var(--on-accent); }
+  .btn.off { background:var(--shade); color:var(--muted); }
+  .btn.sec2 { border:1.5px solid var(--text); }
+  .btn.danger { background:var(--err); color:var(--bg); }
+  .rest { font-size:12px; color:var(--soft); text-align:center; margin:6px 0 0; line-height:1.7; }
+  .rest b { color:var(--text); }
+  .acc { background:var(--card); border-radius:14px; margin-bottom:8px; overflow:hidden; }
+  .acc .h { display:flex; align-items:center; justify-content:space-between; min-height:48px; padding:0 14px; font-size:13px; }
+  .acc .h em { font-style:normal; display:inline-flex; align-items:center; gap:4px; color:var(--soft); font-size:12px; margin-left:8px; }
+  .acc .h em svg { width:14px; height:14px; color:var(--on); }
+  .acc .h > svg { width:18px; height:18px; color:var(--muted); }
+  .acc .p { padding:0 14px 12px; }
+  .acc ol { margin:0 0 8px; padding-left:1.3em; font-size:13px; line-height:1.75; }
+  .acc a { display:flex; align-items:center; justify-content:flex-end; gap:2px; font-size:12px; min-height:36px; color:var(--text); }
+  .acc a svg { width:16px; height:16px; }
+  .plan { background:var(--card); border-radius:14px; padding:12px 14px 6px; }
+  .plan .when { font-size:11px; color:var(--muted); margin:0 0 4px; }
+  .plan ol { margin:0 0 4px; padding-left:1.3em; font-size:14px; line-height:1.8; }
+  .plan a { display:flex; align-items:center; justify-content:flex-end; gap:2px; font-size:12px; min-height:40px; color:var(--text); }
+  .plan a svg { width:16px; height:16px; }
+  .sheet .rest2 { font-size:12px; color:var(--muted); margin:8px 0 0; }
+  .toast { position:absolute; left:16px; right:16px; bottom:84px; background:var(--text); color:var(--bg); border-radius:14px; padding:12px 14px; display:flex; gap:10px; align-items:center; font-size:14px; font-weight:500; }
+  .toast .ok { width:22px; height:22px; border-radius:50%; background:#8FC1A0; display:grid; place-items:center; flex:none; }
+  .toast svg { width:13px; height:13px; fill:none; stroke:var(--bg); stroke-width:3; stroke-linecap:round; stroke-linejoin:round; }
+  .none { font-size:12px; color:var(--muted); margin:0; }
+  .line { fill:none; stroke:currentColor; stroke-width:1.9; stroke-linecap:round; stroke-linejoin:round; } .fill { fill:currentColor; }
+  .tabs { display:grid; grid-template-columns:repeat(3,1fr); padding:8px 4px 14px; background:var(--tabbar); border-top:1px solid var(--line); }
+  .tab { display:flex; flex-direction:column; align-items:center; gap:2px; font-size:11px; color:var(--muted); min-height:46px; justify-content:center; }
+  .tab svg { width:24px; height:24px; } .tab.on { color:var(--on); font-weight:700; }
+  .dim { position:absolute; inset:0; background:var(--dim); }
+  .sheet { position:absolute; left:0; right:0; bottom:0; background:var(--card); border-radius:20px 20px 0 0; padding:10px 18px 20px; }
+  .grab { width:40px; height:5px; border-radius:3px; background:var(--shade); margin:0 auto 12px; }
+  .sheet h3 { margin:0 0 8px; font-size:17px; } .sheet p.m { margin:0 0 6px; font-size:14px; color:var(--soft); line-height:1.8; }
+  .sheet .btn { margin-top:10px; }
+  .menu a { display:flex; align-items:center; gap:12px; min-height:52px; font-size:15px; border-bottom:1px solid var(--shade); }
+  .menu a:last-of-type { border-bottom:0; } .menu a svg { width:22px; height:22px; } .menu a.del { color:var(--err); }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>気づきを保存したあとの画面</h1>
+  <p class="lead">気づきの作成・編集で「保存」を押すと、その気づきの「気づきの詳細」に移り、画面の下にトーストを出します（15文字までなので2秒）。戻るボタンを押すと、作成画面ではなく本ごとの気づき一覧に戻ります。</p>
+
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <defs>
+      <g id="qmark"><path class="fill" d="M3 13 C 3 8.5 5.2 5.2 9 4 L 9.8 5.6 C 7.7 6.6 6.6 8.2 6.5 10 H 9 V 16 H 3 Z M12.5 13 C 12.5 8.5 14.7 5.2 18.5 4 L 19.3 5.6 C 17.2 6.6 16.1 8.2 16 10 H 18.5 V 16 H 12.5 Z" transform="translate(0 2)"/></g>
+      <g id="back" class="line"><path d="M14.5 5.5 L 8 12 L 14.5 18.5"/></g>
+      <g id="more" class="fill"><circle cx="12" cy="5.5" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="12" cy="18.5" r="1.8"/></g>
+      <g id="down" class="line"><path d="M6 9 L 12 15 L 18 9"/></g>
+      <g id="up" class="line"><path d="M6 15 L 12 9 L 18 15"/></g>
+      <g id="next" class="line"><path d="M9.5 5.5 L 16 12 L 9.5 18.5"/></g>
+      <g id="sprout"><path d="M12 21 V 11" stroke="currentColor" stroke-width="2" stroke-linecap="round" fill="none"/><path class="fill" d="M12 13 C 11.2 8.5 7.5 6.5 3.5 7 C 4.2 11.2 7.8 13.4 12 13 Z"/><path class="fill" d="M12 11.5 C 12.8 7 16.5 4.5 20.5 5 C 19.8 9.4 16.2 11.9 12 11.5 Z"/></g>
+      <g id="spark" class="line"><path d="M12 3 V 7 M12 17 V 21 M3 12 H 7 M17 12 H 21"/><circle cx="12" cy="12" r="2.6"/></g>
+      <g id="pen" class="line"><path d="M4 20 H 8 L 19 9 L 15 5 L 4 16 Z"/><path d="M13 7 L 17 11"/></g>
+      <g id="trash" class="line"><path d="M4.5 7 H 19.5"/><path d="M9.5 7 V 4.5 H 14.5 V 7"/><path d="M6.5 7 L 7.5 20 H 16.5 L 17.5 7"/></g>
+      <g id="shelf-off" class="line"><rect x="3.5" y="6" width="4" height="13.5" rx="1.2"/><rect x="8.5" y="4" width="4" height="15.5" rx="1.2"/><rect x="14.6" y="5.2" width="4" height="14.6" rx="1.2" transform="rotate(-14 16.6 19.5)"/><path d="M2.5 20.5 H 21.5"/></g>
+      <g id="note-on"><path class="fill" d="M6.2 2.8 H 15.6 C 16 2.8 16.3 2.9 16.6 3.2 L 19.4 6 C 19.7 6.3 19.8 6.6 19.8 7 V 20.2 C 19.8 20.8 19.4 21.2 18.8 21.2 H 6.2 C 5.6 21.2 5.2 20.8 5.2 20.2 V 3.8 C 5.2 3.2 5.6 2.8 6.2 2.8 Z"/><path d="M9 2.8 V 11 L 11 9.5 L 13 11 V 2.8 Z" fill="var(--tabbar)"/><path d="M9 15 H 16 M9 17.8 H 13.5" fill="none" stroke="var(--tabbar)" stroke-width="1.9" stroke-linecap="round"/></g>
+      <g id="me-off" class="line"><circle cx="12" cy="8.5" r="4"/><path d="M4.5 20.5 C 5.5 16.6 8.4 14.8 12 14.8 S 18.5 16.6 19.5 20.5"/></g>
+    </defs>
+  </svg>
+
+  <div class="grid">
+    <section class="opt"><div class="phone night" data-s="saved"></div><h2>A. 新しく書いて保存したあと</h2><p>書いた気づきの全文を確かめられ、そのまま「AI提案を受ける」を押せる。トースト「気づきを保存しました」。</p></section>
+    <section class="opt"><div class="phone night" data-s="edited"></div><h2>B. 編集して保存したあと</h2><p>直した内容が表示され、次の一歩（AI提案）はそのまま残っている。トースト「気づきを変更しました」。</p></section>
+  </div>
+</div>
+<script>
+  var tabs = '<nav class="tabs"><span class="tab"><svg viewBox="0 0 24 24"><use href="#shelf-off"/></svg>本棚</span><span class="tab on"><svg viewBox="0 0 24 24"><use href="#note-on"/></svg>気づき</span><span class="tab"><svg viewBox="0 0 24 24"><use href="#me-off"/></svg>プロフィール</span></nav>';
+  var hdr = '<div class="top"><span aria-label="戻る"><svg viewBox="0 0 24 24"><use href="#back"/></svg></span><span aria-label="メニュー"><svg viewBox="0 0 24 24"><use href="#more"/></svg></span></div>';
+  var book = '<div class="book"><div class="cv"></div><div><b>嫌われる勇気</b><span>P.142　10月18日に書いた気づき</span></div></div>';
+  var note = '<div class="note"><div class="ribbon" aria-hidden="true"></div><p class="q"><svg viewBox="0 0 22 22"><use href="#qmark"/></svg>他者の課題には踏み込まない</p><p class="b">上司の機嫌を自分の責任だと思い込んで、会議で黙ってしまうことが多かった。でも、それは上司の課題であって、私が引き受けるものではないのかもしれない。</p></div>';
+  var plan = '<p class="sec">次の一歩</p><div class="plan"><p class="when">10月20日のAI提案</p><ol><li>次の会議で、結論から一言だけ発言する</li><li>発言したあとの気持ちを1行メモする</li></ol><a>深掘りと回答も見る<svg viewBox="0 0 24 24"><use href="#next"/></svg></a></div>';
+  var again = '<span class="btn sec2" style="margin-top:14px"><svg viewBox="0 0 24 24"><use href="#spark"/></svg>もう一度AI提案を受ける</span><p class="rest">本日あと<b>3回</b>（気づきの登録は何件でもできます）</p>';
+  var againOff = '<span class="btn off" style="margin-top:14px" aria-disabled="true"><svg viewBox="0 0 24 24"><use href="#spark"/></svg>もう一度AI提案を受ける</span><p class="rest">本日のAI提案は使い切りました。明日0時に回復します。<br>（気づきの登録は何件でもできます）</p>';
+  var firstAi = '<p class="sec">次の一歩</p><p class="none" style="margin-bottom:10px">AIが気づきを深掘りする質問をし、あなたの回答から次の一歩を一緒に考えます。</p><span class="btn primary"><svg viewBox="0 0 24 24"><use href="#spark"/></svg>AI提案を受ける</span><p class="rest">本日あと<b>3回</b>（気づきの登録は何件でもできます）</p>';
+  var main = hdr + '<div class="body">' + book + note + plan + again + '</div>' + tabs;
+  var html = {
+    saved: hdr + '<div class="body">' + book.replace('10月18日に書いた気づき','今日書いた気づき') + note + firstAi + '</div>' + tabs + '<div class="toast" role="status"><span class="ok"><svg viewBox="0 0 24 24"><path d="M5 12.5 L 10 17 L 19 7.5"/></svg></span>気づきを保存しました</div>',
+    edited: hdr + '<div class="body">' + book + note + plan + '</div>' + tabs + '<div class="toast" role="status"><span class="ok"><svg viewBox="0 0 24 24"><path d="M5 12.5 L 10 17 L 19 7.5"/></svg></span>気づきを変更しました</div>',
+    main: main,
+    scrolled: hdr + '<div class="body" style="padding-top:8px">' + plan + again + '</div>' + tabs,
+    again: hdr + '<div class="body" style="padding-top:8px">' + plan + again + '</div>' + tabs + '<div class="dim"></div><div class="sheet" role="dialog"><div class="grab"></div><h3>もう一度AI提案を受けますか？</h3><p class="m">新しいAI提案が完了すると、今の次の一歩は新しいものに置き換わり、元には戻せません。途中でやめた場合は、今の次の一歩が残ります。</p><span class="btn primary">AI提案を受ける</span><span class="btn sec2">キャンセル</span><p class="rest2" style="text-align:center">本日あと3回（受けると1回使います）</p></div>',
+    first: hdr + '<div class="body">' + book + note + firstAi + '</div>' + tabs,
+    limit: hdr + '<div class="body" style="padding-top:8px">' + plan + againOff + '</div>' + tabs,
+    menu: main + '<div class="dim"></div><div class="sheet menu" role="dialog"><div class="grab"></div><a><svg viewBox="0 0 24 24"><use href="#pen"/></svg>気づきを編集</a><a class="del"><svg viewBox="0 0 24 24"><use href="#trash"/></svg>気づきを削除</a><span class="btn sec2" style="margin-top:10px">キャンセル</span></div>',
+    del: main + '<div class="dim"></div><div class="sheet" role="dialog"><div class="grab"></div><h3>この気づきを削除しますか？</h3><p class="m">この気づきの次の一歩（AI提案）も一緒に削除されます。削除すると、元に戻せません。</p><span class="btn danger">削除する</span><span class="btn sec2">キャンセル</span></div>'
+  };
+  document.querySelectorAll('.phone').forEach(function(p){ p.innerHTML = html[p.dataset.s]; });
+</script>
+</body>
+</html>
