@@ -37,7 +37,7 @@
   .row.deleted .cv { opacity:.6; }
   .sortbar { display:flex; align-items:center; justify-content:space-between; margin:0 0 6px; }
   .sortbar span { font-size:12px; color:var(--soft); }
-  .sortbtn { display:flex; align-items:center; gap:4px; min-height:44px; padding:0 4px 0 10px; font-size:12px; color:var(--text); }
+  .sortbtn { display:flex; align-items:center; justify-content:center; width:44px; height:44px; margin-right:-10px; color:var(--text); }
   .sortbtn svg { width:22px; height:22px; }
   .dim { position:absolute; inset:0; background:rgba(5,10,13,.62); }
   .sheet { position:absolute; left:0; right:0; bottom:0; background:var(--card); border-radius:20px 20px 0 0; padding:10px 18px 20px; }
@@ -93,7 +93,7 @@
   </svg>
 
   <div class="grid">
-    <section class="opt"><div class="phone night" data-s="list"></div><h2>1. 通常（最近書いた順）</h2><p>段に分けず1つの一覧にする。気づきのある本を最後に書いた日が新しい順に並べ、0件の本はその下に、本棚に登録した日が新しい順で続く。右上の並び替えボタンで順番を変えられる。</p></section>
+    <section class="opt"><div class="phone night" data-s="list"></div><h2>1. 通常（最近書いた順）</h2><p>段に分けず1つの一覧にする。気づきのある本を最後に書いた日が新しい順に並べ、0件の本はその下に、本棚に登録した日が新しい順で続く。右上の並び替えアイコンを押すと、順番を変えられる。</p></section>
     <section class="opt"><div class="phone night" data-s="sheet"></div><h2>2. 並び替え（シート）</h2><p>3つから選ぶ。選ぶとシートが閉じて、すぐ並び替わる。今の並び順に印を付ける。</p></section>
     <section class="opt"><div class="phone night" data-s="many"></div><h2>3. 気づきが多い順</h2><p>件数が多い本から。同じ件数なら、最後に書いた日が新しい本から。</p></section>
     <section class="opt"><div class="phone night" data-s="few"></div><h2>4. 気づきが少ない順</h2><p>0件の本から。まだ書いていない本を探すときに使う。同じ件数なら、本棚に登録した日が新しい本から。</p></section>
@@ -111,7 +111,7 @@
   var tabs = '<nav class="tabs"><span class="tab"><svg viewBox="0 0 24 24"><use href="#shelf-off"/></svg>本棚</span><span class="tab on"><svg viewBox="0 0 24 24"><use href="#note-on"/></svg>気づき</span><span class="tab"><svg viewBox="0 0 24 24"><use href="#me-off"/></svg>プロフィール</span></nav>';
   function row(i){ return '<div class="row'+(i[4]?' deleted':'')+'">' + (i[1] ? '<div class="cv" style="background:'+i[1]+'"></div>' : '<div class="cv"><svg viewBox="10 8 80 80"><use href="#mark"/></svg></div>') +
       '<div class="m"><p class="t">'+i[0]+'</p><p class="c">気づき '+i[2]+'件</p><p class="d">最後に書いた日：'+i[3]+'</p>' + (i[4]?'<span class="gone">本棚から削除済み</span>':'') + '</div><svg viewBox="0 0 24 24"><use href="#next"/></svg></div>'; }
-  function bar(name){ return '<div class="sortbar"><span>並び順：'+name+'</span><span class="sortbtn" role="button" aria-label="並び替え">並び替え<svg viewBox="0 0 24 24"><use href="#sort"/></svg></span></div>'; }
+  function bar(name){ return '<div class="sortbar"><span>並び順：'+name+'</span><span class="sortbtn" role="button" aria-label="並び替え"><svg viewBox="0 0 24 24"><use href="#sort"/></svg></span></div>'; }
   var hd = '<div class="head"><h3>気づき一覧</h3><span>気づき 16件</span></div>';
   var recent = items.map(row).join('') + zeros.map(zrow).join('');
   var byMany = [items[2],items[0],items[1]].map(row).join('') + zeros.map(zrow).join('');
