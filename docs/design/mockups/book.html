@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SHIORIME 本の詳細の画面案</title>
+<link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&family=Kiwi+Maru:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root { --page-bg:#E3E5E3; --page-ink:#23272A; --page-sub:#5D6368;
+          --maru:"Zen Maru Gothic","Hiragino Maru Gothic ProN",sans-serif; --kiwi:"Kiwi Maru","Hiragino Maru Gothic ProN",serif; }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --page-bg:#1A1C1E; --page-ink:#E6E6E2; --page-sub:#A2A7AC; } }
+  :root[data-theme="dark"] { --page-bg:#1A1C1E; --page-ink:#E6E6E2; --page-sub:#A2A7AC; }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--page-bg); color:var(--page-ink); font-family:var(--maru); line-height:1.6; }
+  .wrap { max-width:1240px; margin:0 auto; padding:32px 16px 56px; }
+  h1 { font-size:22px; margin:0 0 6px; } .lead { font-size:14px; color:var(--page-sub); margin:0 0 24px; max-width:52em; }
+  .grid { display:grid; gap:32px 20px; grid-template-columns:repeat(auto-fit,minmax(270px,1fr)); }
+  .opt > h2 { font-size:16px; margin:12px 0 2px; } .opt > p { font-size:13px; color:var(--page-sub); margin:0; }
+
+  .night { --bg:#14232B; --card:#1C3039; --shade:#233B45; --text:#ECE6D8; --soft:#D5CFC2; --muted:#9AA7AC; --accent:#E2A84B; --on-accent:#14232B; --on:#E2A84B; --tint:rgba(226,168,75,.16); --tabbar:#101C22; --line:#101C22; --book:#ECE6D8; --err:#EE9A8F; --ok:#8FC1A0; --dim:rgba(5,10,13,.62); }
+
+  .phone { position:relative; width:100%; max-width:300px; height:620px; margin:0 auto; border-radius:28px; overflow:hidden; display:flex; flex-direction:column;
+           background:var(--bg); color:var(--text); border:1px solid rgba(127,127,127,.3); }
+  .top { display:flex; align-items:center; justify-content:space-between; padding:12px 8px 0; }
+  .top svg { width:24px; height:24px; } .top span { width:44px; height:44px; display:flex; align-items:center; justify-content:center; }
+  .body { flex:1; overflow:hidden; padding:0 18px; }
+  .notice { display:flex; gap:8px; align-items:flex-start; background:var(--tint); border:1px solid var(--on); color:var(--text); border-radius:12px; padding:10px 12px; font-size:13px; margin:2px 0 10px; }
+  .notice svg { width:18px; height:18px; color:var(--on); flex:none; margin-top:1px; }
+  .hero { display:flex; flex-direction:column; align-items:center; text-align:center; }
+  .cover { width:104px; height:156px; border-radius:6px; background:#C9A54A; }
+  .cover.icon { background:var(--card); display:flex; align-items:center; justify-content:center; } .cover.icon svg { width:70%; }
+  .title { font-size:20px; font-weight:700; margin:14px 0 2px; line-height:1.4; }
+  .author { font-size:13px; color:var(--muted); margin:0; }
+  .lab { font-size:12px; color:var(--muted); margin:18px 0 6px; }
+  .seg { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+  .seg b { display:flex; align-items:center; justify-content:center; gap:4px; min-height:44px; border-radius:999px; border:1.5px solid var(--shade); font-weight:500; font-size:14px; color:var(--soft); }
+  .seg b.on { background:var(--tint); border-color:var(--on); color:var(--on); font-weight:700; }
+  .seg svg { width:14px; height:14px; }
+  .notes { background:var(--card); border-radius:16px; padding:14px 16px; margin-top:18px; }
+  .notes .n { display:flex; justify-content:space-between; align-items:baseline; }
+  .notes .n b { font-size:14px; } .notes .n span { font-size:13px; color:var(--soft); }
+  .notes .go { display:flex; align-items:center; justify-content:space-between; min-height:44px; font-size:14px; margin-top:4px; border-top:1px solid var(--shade); padding-top:8px; }
+  .notes .go svg { width:18px; height:18px; }
+  .notes .none { font-size:13px; color:var(--soft); margin:6px 0 0; }
+  .btn { display:flex; align-items:center; justify-content:center; gap:6px; min-height:48px; border-radius:999px; font-weight:700; font-size:15px; margin-top:12px; }
+  .btn svg { width:20px; height:20px; }
+  .btn.primary { background:var(--accent); color:var(--on-accent); }
+  .btn.sec { border:1.5px solid var(--text); }
+  .btn.danger { background:var(--err); color:var(--bg); }
+  .tabs { display:grid; grid-template-columns:repeat(3,1fr); padding:8px 4px 14px; background:var(--tabbar); border-top:1px solid var(--line); }
+  .tab { display:flex; flex-direction:column; align-items:center; gap:2px; font-size:11px; color:var(--muted); min-height:46px; justify-content:center; }
+  .tab svg { width:24px; height:24px; } .tab.on { color:var(--on); font-weight:700; }
+  .line { fill:none; stroke:currentColor; stroke-width:1.9; stroke-linecap:round; stroke-linejoin:round; } .fill { fill:currentColor; }
+
+  .dim { position:absolute; inset:0; background:var(--dim); }
+  .sheet { position:absolute; left:0; right:0; bottom:0; background:var(--card); border-radius:20px 20px 0 0; padding:10px 18px 20px; }
+  .grab { width:40px; height:5px; border-radius:3px; background:var(--shade); margin:0 auto 12px; }
+  .sheet h3 { margin:0 0 8px; font-size:17px; } .sheet p.m { margin:0 0 6px; font-size:14px; color:var(--soft); line-height:1.8; }
+  .menu a { display:flex; align-items:center; gap:12px; min-height:52px; font-size:15px; border-bottom:1px solid var(--shade); }
+  .menu a:last-of-type { border-bottom:0; } .menu a svg { width:22px; height:22px; } .menu a.del { color:var(--err); }
+  .flab { font-size:13px; color:var(--soft); margin:0 0 6px; }
+  .field { background:var(--bg); border-radius:12px; padding:10px 14px; font-size:16px; border:1.5px solid var(--shade); margin-bottom:10px; }
+  .toast { position:absolute; left:16px; right:16px; bottom:84px; background:var(--text); color:var(--bg); border-radius:14px; padding:12px 14px; display:flex; gap:10px; align-items:center; font-size:14px; font-weight:500; }
+  .toast .ok { width:22px; height:22px; border-radius:50%; background:var(--ok); display:grid; place-items:center; flex:none; }
+  .toast svg { width:13px; height:13px; fill:none; stroke:var(--bg); stroke-width:3; stroke-linecap:round; stroke-linejoin:round; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>本の詳細の画面案</h1>
+  <p class="lead">本棚や検索から開く、1冊の本の画面です。読書ステータスの変更、気づきを書く・見る、本の編集・削除をここで行います。表紙の絵は仮のものです。</p>
+
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <defs>
+      <g id="mark">
+        <circle cx="50" cy="40" r="30" fill="#E2A84B" opacity=".16"/><circle cx="50" cy="40" r="19" fill="#E2A84B" opacity=".16"/>
+        <path d="M50 60 C 41 54, 28 53, 16 56 V 76 C 28 73, 41 74, 50 80 Z" fill="var(--book)"/>
+        <path d="M50 60 C 59 54, 72 53, 84 56 V 76 C 72 73, 59 74, 50 80 Z" fill="var(--book)"/>
+        <path d="M50 60 V 36" stroke="#E2A84B" stroke-width="4.5" stroke-linecap="round" fill="none"/>
+        <path d="M50 42 C 48 30, 38 24, 26 26 C 28 38, 38 44, 50 42 Z" fill="#E2A84B"/>
+        <path d="M50 38 C 52 26, 62 19, 74 21 C 72 33, 62 39, 50 38 Z" fill="#E2A84B"/>
+      </g>
+      <g id="back" class="line"><path d="M14.5 5.5 L 8 12 L 14.5 18.5"/></g>
+      <g id="more" class="fill"><circle cx="12" cy="5.5" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="12" cy="18.5" r="1.8"/></g>
+      <g id="next" class="line"><path d="M9.5 5.5 L 16 12 L 9.5 18.5"/></g>
+      <g id="plus" class="line" style="stroke-width:2.4"><path d="M12 5 V 19 M5 12 H 19"/></g>
+      <g id="done" class="line" style="stroke-width:2.8"><path d="M5 12.5 L 10 17 L 19 7.5"/></g>
+      <g id="info" class="line"><circle cx="12" cy="12" r="9"/><path d="M12 11 V 16.5"/><path d="M12 7.6 V 7.7"/></g>
+      <g id="pen" class="line"><path d="M4 20 H 8 L 19 9 L 15 5 L 4 16 Z"/><path d="M13 7 L 17 11"/></g>
+      <g id="trash" class="line"><path d="M4.5 7 H 19.5"/><path d="M9.5 7 V 4.5 H 14.5 V 7"/><path d="M6.5 7 L 7.5 20 H 16.5 L 17.5 7"/></g>
+      <g id="shelf-on" class="fill"><rect x="3" y="5.5" width="5" height="14.5" rx="1.4"/><rect x="8.8" y="3.5" width="5" height="16.5" rx="1.4"/><rect x="14.8" y="4.6" width="5" height="15.4" rx="1.4" transform="rotate(-14 17.3 20)"/><rect x="2" y="20" width="20" height="2" rx="1"/></g>
+      <g id="note-off" class="line"><path d="M6 3.5 H 15.5 L 19 7 V 20.5 H 6 Z"/><path d="M9 3.5 V 11 L 11 9.5 L 13 11 V 3.5"/><path d="M9 15 H 16 M9 17.8 H 13.5"/></g>
+      <g id="me-off" class="line"><circle cx="12" cy="8.5" r="4"/><path d="M4.5 20.5 C 5.5 16.6 8.4 14.8 12 14.8 S 18.5 16.6 19.5 20.5"/></g>
+    </defs>
+  </svg>
+
+  <div class="grid">
+    <section class="opt"><div class="phone night" data-s="main"></div><h2>1. 通常</h2><p>表紙・タイトル・著者、読書ステータス（押すとすぐ保存）、この本の気づきの件数と「この本の気づきを見る」、「＋気づきを書く」。右上の「⋮」から編集・削除。</p></section>
+    <section class="opt"><div class="phone night" data-s="new"></div><h2>2. 追加した直後（気づきなし）</h2><p>検索・手入力から追加すると、この画面に移ってトーストを出す。気づきがないときは「見る」の代わりに案内文を出す。</p></section>
+    <section class="opt"><div class="phone night" data-s="dup"></div><h2>3. 既に本棚にある本を追加しようとしたとき</h2><p>画面の上に「この本は既に本棚にあります」と出す。トーストは成功の知らせだけに使う決まりのため、ここでは使わない。</p></section>
+    <section class="opt"><div class="phone night" data-s="menu"></div><h2>4. 「⋮」メニュー（Google Books の本）</h2><p>「本棚から削除」だけ。Google Books から追加した本は、本の情報を編集できない。</p></section>
+    <section class="opt"><div class="phone night" data-s="menu2"></div><h2>5. 「⋮」メニュー（手入力の本）</h2><p>「本の情報を編集」と「本棚から削除」の2つ。削除は夕焼けの色で、ほかの操作と見分ける。</p></section>
+    <section class="opt"><div class="phone night" data-s="edit"></div><h2>6. 本の情報を編集（手入力の本だけ）</h2><p>タイトル（必須）と著者（任意）だけ。今の値を最初から入れておく。</p></section>
+    <section class="opt"><div class="phone night" data-s="del"></div><h2>7. 削除の確認（シート）</h2><p>要件定義書の確認文をそのまま使う。削除すると本棚に戻り、トースト「本棚から削除しました」。</p></section>
+  </div>
+</div>
+
+<script>
+  var tabs = '<nav class="tabs"><span class="tab on"><svg viewBox="0 0 24 24"><use href="#shelf-on"/></svg>本棚</span><span class="tab"><svg viewBox="0 0 24 24"><use href="#note-off"/></svg>気づき</span><span class="tab"><svg viewBox="0 0 24 24"><use href="#me-off"/></svg>プロフィール</span></nav>';
+  var hdr = '<div class="top"><span aria-label="戻る"><svg viewBox="0 0 24 24"><use href="#back"/></svg></span><span aria-label="メニュー"><svg viewBox="0 0 24 24"><use href="#more"/></svg></span></div>';
+  function hero(icon){ return '<div class="hero">' + (icon ? '<div class="cover icon"><svg viewBox="10 8 80 80"><use href="#mark"/></svg></div><p class="title">しおりめの本</p>'
+      : '<div class="cover"></div><p class="title">幸せになる勇気</p><p class="author">岸見一郎、古賀史健</p>') + '</div>'; }
+  var seg = '<p class="lab">読書ステータス</p><div class="seg"><b class="on">読書中</b><b><svg viewBox="0 0 24 24"><use href="#done"/></svg>読了</b></div>';
+  var notes3 = '<div class="notes"><div class="n"><b>この本の気づき</b><span>3件</span></div><a class="go">この本の気づきを見る<svg viewBox="0 0 24 24"><use href="#next"/></svg></a></div>';
+  var notes0 = '<div class="notes"><div class="n"><b>この本の気づき</b><span>0件</span></div><p class="none">心に残った一文や、読んで考えたことを書き留めてみましょう。</p></div>';
+  var write = '<span class="btn primary"><svg viewBox="0 0 24 24"><use href="#plus"/></svg>気づきを書く</span>';
+  var main = hdr + '<div class="body">' + hero() + seg + notes3 + write + '</div>' + tabs;
+  var mainM = hdr + '<div class="body">' + hero(true) + seg + notes3 + write + '</div>' + tabs;
+  var html = {
+    main: main,
+    new: hdr + '<div class="body">' + hero(true) + seg + notes0 + write + '</div>' + tabs +
+      '<div class="toast" role="status"><span class="ok"><svg viewBox="0 0 24 24"><path d="M5 12.5 L 10 17 L 19 7.5"/></svg></span>本棚に追加しました</div>',
+    dup: hdr + '<div class="body"><div class="notice" role="status"><svg viewBox="0 0 24 24"><use href="#info"/></svg>この本は既に本棚にあります</div>' + hero() + seg + notes3 + '</div>' + tabs,
+    menu: main + '<div class="dim"></div><div class="sheet menu" role="dialog"><div class="grab"></div><a class="del"><svg viewBox="0 0 24 24"><use href="#trash"/></svg>本棚から削除</a><span class="btn sec">キャンセル</span></div>',
+    menu2: mainM + '<div class="dim"></div><div class="sheet menu" role="dialog"><div class="grab"></div><a><svg viewBox="0 0 24 24"><use href="#pen"/></svg>本の情報を編集</a><a class="del"><svg viewBox="0 0 24 24"><use href="#trash"/></svg>本棚から削除</a><span class="btn sec">キャンセル</span></div>',
+    edit: mainM + '<div class="dim"></div><div class="sheet" role="dialog"><div class="grab"></div><h3>本の情報を編集</h3><p class="flab">タイトル（必須）</p><div class="field">しおりめの本</div><p class="flab">著者（任意）</p><div class="field" style="color:var(--muted)">例：山田太郎</div><span class="btn primary">保存する</span><span class="btn sec">キャンセル</span></div>',
+    del: main + '<div class="dim"></div><div class="sheet" role="dialog"><div class="grab"></div><h3>この本を本棚から削除しますか？</h3><p class="m">この本の気づきは、気づき一覧に残ります。</p><span class="btn danger">削除する</span><span class="btn sec">キャンセル</span></div>'
+  };
+  document.querySelectorAll('.phone').forEach(function(p){ p.innerHTML = html[p.dataset.s]; });
+</script>
+</body>
+</html>
