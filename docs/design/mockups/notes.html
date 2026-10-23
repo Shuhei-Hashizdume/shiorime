@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SHIORIME 気づき一覧の画面案</title>
+<link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&family=Kiwi+Maru:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root { --page-bg:#E3E5E3; --page-ink:#23272A; --page-sub:#5D6368;
+          --maru:"Zen Maru Gothic","Hiragino Maru Gothic ProN",sans-serif; --kiwi:"Kiwi Maru","Hiragino Maru Gothic ProN",serif; }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --page-bg:#1A1C1E; --page-ink:#E6E6E2; --page-sub:#A2A7AC; } }
+  :root[data-theme="dark"] { --page-bg:#1A1C1E; --page-ink:#E6E6E2; --page-sub:#A2A7AC; }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--page-bg); color:var(--page-ink); font-family:var(--maru); line-height:1.6; }
+  .wrap { max-width:1000px; margin:0 auto; padding:32px 16px 56px; }
+  h1 { font-size:22px; margin:0 0 6px; } .lead { font-size:14px; color:var(--page-sub); margin:0 0 24px; max-width:52em; }
+  .grid { display:grid; gap:32px 20px; grid-template-columns:repeat(auto-fit,minmax(270px,1fr)); }
+  .opt > h2 { font-size:16px; margin:12px 0 2px; } .opt > p { font-size:13px; color:var(--page-sub); margin:0; }
+
+  .night { --bg:#14232B; --card:#1C3039; --shade:#233B45; --text:#ECE6D8; --soft:#D5CFC2; --muted:#9AA7AC; --accent:#E2A84B; --on-accent:#14232B; --on:#E2A84B; --tabbar:#101C22; --line:#101C22; --book:#ECE6D8; }
+  .morning { --bg:#FBF7EC; --card:#FFFFFF; --shade:#F3EBD6; --text:#2B3238; --soft:#454D54; --muted:#62686E; --accent:#E8A23A; --on-accent:#2B3238; --on:#8A5A12; --tabbar:#FFFFFF; --line:#F3EBD6; --book:#2B3238; }
+
+  .phone { position:relative; width:100%; max-width:300px; height:620px; margin:0 auto; border-radius:28px; overflow:hidden; display:flex; flex-direction:column;
+           background:var(--bg); color:var(--text); border:1px solid rgba(127,127,127,.3); }
+  .head { padding:16px 16px 6px; display:flex; align-items:baseline; justify-content:space-between; }
+  .head h3 { margin:0; font-size:20px; } .head span { font-size:12px; color:var(--muted); }
+  .sub { font-size:12px; color:var(--muted); margin:0 16px 6px; }
+  .body { flex:1; overflow:hidden; padding:0 16px; }
+  .row { display:flex; align-items:center; gap:12px; background:var(--card); border-radius:16px; padding:12px; margin-bottom:10px; }
+  .cv { width:44px; height:66px; border-radius:4px; flex:none; display:flex; align-items:center; justify-content:center; background:var(--shade); }
+  .cv svg { width:72%; }
+  .row .m { flex:1; min-width:0; }
+  .row .t { font-size:14px; font-weight:500; margin:0; line-height:1.45; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
+  .row .c { font-size:12px; color:var(--soft); margin:3px 0 0; }
+  .row .d { font-size:11px; color:var(--muted); margin:1px 0 0; }
+  .row .gone { display:inline-block; font-size:11px; color:var(--muted); border:1px solid var(--muted); border-radius:999px; padding:0 8px; margin-top:4px; }
+  .row.deleted .cv { opacity:.6; }
+  .sortbar { display:flex; align-items:center; justify-content:space-between; margin:0 0 6px; }
+  .sortbar span { font-size:12px; color:var(--soft); }
+  .sortbtn { display:flex; align-items:center; gap:4px; min-height:44px; padding:0 4px 0 10px; font-size:12px; color:var(--text); }
+  .sortbtn svg { width:22px; height:22px; }
+  .dim { position:absolute; inset:0; background:rgba(5,10,13,.62); }
+  .sheet { position:absolute; left:0; right:0; bottom:0; background:var(--card); border-radius:20px 20px 0 0; padding:10px 18px 20px; }
+  .grab { width:40px; height:5px; border-radius:3px; background:var(--shade); margin:0 auto 12px; }
+  .sheet h3 { margin:0 0 6px; font-size:17px; }
+  .opt2 { display:flex; align-items:center; justify-content:space-between; min-height:52px; font-size:15px; border-bottom:1px solid var(--shade); }
+  .opt2 small { display:block; font-size:12px; color:var(--muted); }
+  .opt2.on { color:var(--on); font-weight:700; } .opt2 svg { width:20px; height:20px; }
+  .sheet .cancel { display:flex; align-items:center; justify-content:center; min-height:48px; border-radius:999px; border:1.5px solid var(--text); font-weight:700; margin-top:14px; }
+  .sec { font-size:12px; font-weight:700; color:var(--soft); margin:6px 0 8px; }
+  .row .c.zero { color:var(--muted); }
+  .top2 { display:flex; align-items:center; gap:8px; padding:12px 8px 0; } .top2 svg { width:24px; height:24px; } .top2 span { width:44px; height:44px; display:flex; align-items:center; justify-content:center; }
+  .bhead { display:flex; gap:12px; align-items:center; padding:4px 16px 0; } .bhead .cv { width:40px; height:60px; } .bhead h3 { margin:0; font-size:18px; line-height:1.4; } .bhead p { margin:0; font-size:12px; color:var(--muted); }
+  .center .btn svg { width:20px; height:20px; } .btn { gap:6px; } .center p { word-break:keep-all; }
+  .row > svg { width:18px; height:18px; color:var(--muted); flex:none; }
+  .center { flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:0 26px 60px; }
+  .center svg { width:84px; height:84px; }
+  .center h4 { font-family:var(--kiwi); font-weight:500; font-size:17px; margin:10px 0 6px; }
+  .center p { font-size:13px; color:var(--soft); margin:0 0 16px; line-height:1.8; }
+  .btn { display:flex; align-items:center; justify-content:center; min-height:48px; padding:0 24px; border-radius:999px; font-weight:700; font-size:15px; background:var(--accent); color:var(--on-accent); }
+  .sk { display:flex; gap:12px; background:var(--card); border-radius:16px; padding:12px; margin-bottom:10px; }
+  .sk i { display:block; background:var(--shade); border-radius:5px; }
+  @media (prefers-reduced-motion: no-preference) { .sk i { animation:pulse 1.6s ease-in-out infinite; } }
+  @keyframes pulse { 50% { opacity:.45; } }
+  .tabs { display:grid; grid-template-columns:repeat(3,1fr); padding:8px 4px 14px; background:var(--tabbar); border-top:1px solid var(--line); }
+  .tab { display:flex; flex-direction:column; align-items:center; gap:2px; font-size:11px; color:var(--muted); min-height:46px; justify-content:center; }
+  .tab svg { width:24px; height:24px; } .tab.on { color:var(--on); font-weight:700; }
+  .line { fill:none; stroke:currentColor; stroke-width:1.9; stroke-linecap:round; stroke-linejoin:round; } .fill { fill:currentColor; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>気づき一覧の画面案</h1>
+  <p class="lead">共通メニューの「気づき」から開く画面です。本棚にある本をすべて1つの一覧で並べ、気づきが0件の本も表示します。並び順は3つから選べます。どの本を押しても「本ごとの気づき一覧」に移り、そこから気づきを書けます。表紙の絵は仮のものです。</p>
+
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <defs>
+      <g id="mark">
+        <circle cx="50" cy="40" r="30" fill="#E2A84B" opacity=".16"/><circle cx="50" cy="40" r="19" fill="#E2A84B" opacity=".16"/>
+        <path d="M50 60 C 41 54, 28 53, 16 56 V 76 C 28 73, 41 74, 50 80 Z" fill="var(--book)"/>
+        <path d="M50 60 C 59 54, 72 53, 84 56 V 76 C 72 73, 59 74, 50 80 Z" fill="var(--book)"/>
+        <path d="M50 60 V 36" stroke="#E2A84B" stroke-width="4.5" stroke-linecap="round" fill="none"/>
+        <path d="M50 42 C 48 30, 38 24, 26 26 C 28 38, 38 44, 50 42 Z" fill="#E2A84B"/>
+        <path d="M50 38 C 52 26, 62 19, 74 21 C 72 33, 62 39, 50 38 Z" fill="#E2A84B"/>
+      </g>
+      <g id="back" class="line"><path d="M14.5 5.5 L 8 12 L 14.5 18.5"/></g><g id="plus" class="line" style="stroke-width:2.4"><path d="M12 5 V 19 M5 12 H 19"/></g>
+      <g id="sort" class="line"><path d="M7 4.5 V 19.5 M3.8 7.7 L 7 4.5 L 10.2 7.7"/><path d="M17 19.5 V 4.5 M13.8 16.3 L 17 19.5 L 20.2 16.3"/></g><g id="check" class="line" style="stroke-width:2.6"><path d="M5 12.5 L 10 17 L 19 7.5"/></g>
+      <g id="next" class="line"><path d="M9.5 5.5 L 16 12 L 9.5 18.5"/></g>
+      <g id="shelf-off" class="line"><rect x="3.5" y="6" width="4" height="13.5" rx="1.2"/><rect x="8.5" y="4" width="4" height="15.5" rx="1.2"/><rect x="14.6" y="5.2" width="4" height="14.6" rx="1.2" transform="rotate(-14 16.6 19.5)"/><path d="M2.5 20.5 H 21.5"/></g>
+      <g id="note-on"><path class="fill" d="M6.2 2.8 H 15.6 C 16 2.8 16.3 2.9 16.6 3.2 L 19.4 6 C 19.7 6.3 19.8 6.6 19.8 7 V 20.2 C 19.8 20.8 19.4 21.2 18.8 21.2 H 6.2 C 5.6 21.2 5.2 20.8 5.2 20.2 V 3.8 C 5.2 3.2 5.6 2.8 6.2 2.8 Z"/><path d="M9 2.8 V 11 L 11 9.5 L 13 11 V 2.8 Z" fill="var(--tabbar)"/><path d="M9 15 H 16 M9 17.8 H 13.5" fill="none" stroke="var(--tabbar)" stroke-width="1.9" stroke-linecap="round"/></g>
+      <g id="me-off" class="line"><circle cx="12" cy="8.5" r="4"/><path d="M4.5 20.5 C 5.5 16.6 8.4 14.8 12 14.8 S 18.5 16.6 19.5 20.5"/></g>
+    </defs>
+  </svg>
+
+  <div class="grid">
+    <section class="opt"><div class="phone night" data-s="list"></div><h2>1. 通常（最近書いた順）</h2><p>段に分けず1つの一覧にする。気づきのある本を最後に書いた日が新しい順に並べ、0件の本はその下に、本棚に登録した日が新しい順で続く。右上の並び替えボタンで順番を変えられる。</p></section>
+    <section class="opt"><div class="phone night" data-s="sheet"></div><h2>2. 並び替え（シート）</h2><p>3つから選ぶ。選ぶとシートが閉じて、すぐ並び替わる。今の並び順に印を付ける。</p></section>
+    <section class="opt"><div class="phone night" data-s="many"></div><h2>3. 気づきが多い順</h2><p>件数が多い本から。同じ件数なら、最後に書いた日が新しい本から。</p></section>
+    <section class="opt"><div class="phone night" data-s="few"></div><h2>4. 気づきが少ない順</h2><p>0件の本から。まだ書いていない本を探すときに使う。同じ件数なら、本棚に登録した日が新しい本から。</p></section>
+    <section class="opt"><div class="phone night" data-s="book0"></div><h2>5. 0件の本を押した先（本ごとの気づき一覧）</h2><p>次に設計する画面の、気づきが0件のときの表示。「＋気づきを書く」から書ける。</p></section>
+    <section class="opt"><div class="phone night" data-s="empty"></div><h2>6. 本棚に本が1冊もない</h2><p>気づきを書く本がないので、本を追加する案内を出す。</p></section>
+  </div>
+</div>
+<script>
+  var items = [
+    ['嫌われる勇気','#3E6A7A',5,'今日',0],
+    ['エッセンシャル思考','#8C4B3A',3,'10月20日',0],
+    ['7つの習慣','#4C5F3A',8,'10月12日',1]];
+  var zeros = [['人を動かす','#7A3F3F'],['アウトプット大全','#355E5E'],['ゼロ秒思考',null]];
+  function zrow(z){ return '<div class="row">' + (z[1] ? '<div class="cv" style="background:'+z[1]+'"></div>' : '<div class="cv"><svg viewBox="10 8 80 80"><use href="#mark"/></svg></div>') + '<div class="m"><p class="t">'+z[0]+'</p><p class="c zero">気づき 0件</p></div><svg viewBox="0 0 24 24"><use href="#next"/></svg></div>'; }
+  var tabs = '<nav class="tabs"><span class="tab"><svg viewBox="0 0 24 24"><use href="#shelf-off"/></svg>本棚</span><span class="tab on"><svg viewBox="0 0 24 24"><use href="#note-on"/></svg>気づき</span><span class="tab"><svg viewBox="0 0 24 24"><use href="#me-off"/></svg>プロフィール</span></nav>';
+  function row(i){ return '<div class="row'+(i[4]?' deleted':'')+'">' + (i[1] ? '<div class="cv" style="background:'+i[1]+'"></div>' : '<div class="cv"><svg viewBox="10 8 80 80"><use href="#mark"/></svg></div>') +
+      '<div class="m"><p class="t">'+i[0]+'</p><p class="c">気づき '+i[2]+'件</p><p class="d">最後に書いた日：'+i[3]+'</p>' + (i[4]?'<span class="gone">本棚から削除済み</span>':'') + '</div><svg viewBox="0 0 24 24"><use href="#next"/></svg></div>'; }
+  function bar(name){ return '<div class="sortbar"><span>並び順：'+name+'</span><span class="sortbtn" role="button" aria-label="並び替え">並び替え<svg viewBox="0 0 24 24"><use href="#sort"/></svg></span></div>'; }
+  var hd = '<div class="head"><h3>気づき一覧</h3><span>気づき 16件</span></div>';
+  var recent = items.map(row).join('') + zeros.map(zrow).join('');
+  var byMany = [items[2],items[0],items[1]].map(row).join('') + zeros.map(zrow).join('');
+  var byFew = zeros.map(zrow).join('') + [items[1],items[0],items[2]].map(row).join('');
+  function opt(t, sub, on){ return '<div class="opt2'+(on?' on':'')+'"><span>'+t+'<small>'+sub+'</small></span>'+(on?'<svg viewBox="0 0 24 24"><use href="#check"/></svg>':'')+'</div>'; }
+  var html = {
+    list: hd + '<div class="body">' + bar('最近書いた順') + recent + '</div>',
+    sheet: hd + '<div class="body">' + bar('最近書いた順') + recent + '</div>' + '<div class="dim"></div><div class="sheet" role="dialog"><div class="grab"></div><h3>並び替え</h3>' +
+      opt('最近書いた順','最後に気づきを書いた日が新しい本から',1) + opt('気づきが多い順','気づきの件数が多い本から',0) + opt('気づきが少ない順','まだ気づきのない本から',0) + '<span class="cancel">キャンセル</span></div>',
+    many: hd + '<div class="body">' + bar('気づきが多い順') + byMany + '</div>',
+    few: hd + '<div class="body">' + bar('気づきが少ない順') + byFew + '</div>',
+    book0: '<div class="top2"><span><svg viewBox="0 0 24 24"><use href="#back"/></svg></span></div><div class="bhead"><div class="cv" style="background:#7A3F3F"></div><div><h3>人を動かす</h3><p>気づき 0件</p></div></div><div class="center"><h4>まだ気づきがありません</h4><p>心に残った一文や、<br>読んで考えたことを<br>書き留めてみましょう。</p><span class="btn"><svg viewBox="0 0 24 24"><use href="#plus"/></svg>気づきを書く</span></div>',
+    empty: '<div class="head"><h3>気づき一覧</h3></div><div class="center"><svg viewBox="10 8 80 80"><use href="#mark"/></svg><h4>まだ本がありません</h4><p>本棚に本を追加すると、<br>ここから気づきを<br>書けるようになります。</p><span class="btn">本を追加する</span></div>'
+  };
+  document.querySelectorAll('.phone').forEach(function(p){ var h = html[p.dataset.s]; var i = h.indexOf('<div class="dim">'); p.innerHTML = i < 0 ? h + tabs : h.slice(0,i) + tabs + h.slice(i); });
+</script>
+</body>
+</html>
