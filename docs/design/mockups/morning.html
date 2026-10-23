@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SHIORIME 朝の配色サンプル</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&family=Kiwi+Maru:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root { --page-bg:#E3E5E3; --page-ink:#23272A; --page-sub:#5D6368;
+          --maru:"Zen Maru Gothic","Hiragino Maru Gothic ProN",sans-serif;
+          --kiwi:"Kiwi Maru","Hiragino Maru Gothic ProN",serif; }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --page-bg:#1A1C1E; --page-ink:#E6E6E2; --page-sub:#A2A7AC; } }
+  :root[data-theme="dark"] { --page-bg:#1A1C1E; --page-ink:#E6E6E2; --page-sub:#A2A7AC; }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--page-bg); color:var(--page-ink); font-family:var(--maru); line-height:1.6; }
+  .wrap { max-width:1240px; margin:0 auto; padding:32px 16px 56px; }
+  h1 { font-size:22px; margin:0 0 6px; }
+  .lead { margin:0 0 24px; color:var(--page-sub); font-size:14px; max-width:52em; }
+  .grid { display:grid; gap:32px 20px; grid-template-columns:repeat(auto-fit, minmax(260px, 1fr)); }
+  .opt h2 { font-size:16px; margin:0 0 2px; }
+  .opt .c { font-size:13px; color:var(--page-sub); margin:0 0 12px; min-height:4.8em; }
+
+  .phone { width:100%; max-width:290px; margin:0 auto; border-radius:28px; overflow:hidden; display:flex; flex-direction:column;
+           background:var(--bg); color:var(--text); border:1px solid rgba(127,127,127,.3); min-height:560px; }
+  .bar { display:flex; align-items:center; justify-content:space-between; padding:14px 16px 6px; }
+  .logo { display:flex; align-items:center; gap:6px; font-weight:700; letter-spacing:.12em; font-size:15px; }
+  .logo svg { width:26px; height:26px; }
+  .rest { font-size:11px; color:var(--muted); }
+  .content { flex:1; padding:6px 16px 16px; }
+  .card { position:relative; overflow:hidden; background:var(--card); border-radius:16px; padding:16px 16px 14px; margin-top:8px; }
+  .ribbon { position:absolute; top:0; right:16px; width:12px; height:38px; background:var(--ribbon); clip-path:polygon(0 0,100% 0,100% 100%,50% 82%,0 100%); }
+  .book { font-size:13px; font-weight:700; margin:0; padding-right:24px; }
+  .meta { font-size:11px; color:var(--muted); margin:0 0 8px; }
+  .quote { font-family:var(--kiwi); color:var(--quote); font-size:15px; margin:0 0 6px; }
+  .body { font-size:13px; color:var(--soft); margin:0; line-height:1.8; }
+  .ai { background:var(--shade); border-radius:16px; padding:14px 16px 16px; margin-top:14px; }
+  .ai small { font-size:11px; color:var(--muted); }
+  .ai p { font-family:var(--kiwi); font-size:15px; margin:4px 0 12px; line-height:1.7; }
+  .btn { display:flex; align-items:center; justify-content:center; min-height:46px; border-radius:999px; font-weight:700; font-size:15px; background:var(--accent); color:var(--on-accent); }
+  .note { font-size:11px; color:var(--muted); margin:8px 0 0; text-align:center; }
+  .tabs { display:grid; grid-template-columns:repeat(3,1fr); padding:8px 4px 14px; background:var(--tabbar); border-top:1px solid var(--line); }
+  .tab { display:flex; flex-direction:column; align-items:center; gap:2px; font-size:11px; color:var(--muted); min-height:46px; justify-content:center; }
+  .tab svg { width:24px; height:24px; }
+  .tab.on { color:var(--tab-on); font-weight:700; }
+  .line { fill:none; stroke:currentColor; stroke-width:1.9; stroke-linecap:round; stroke-linejoin:round; }
+  .fill { fill:currentColor; }
+
+  .sw { display:flex; gap:4px; max-width:290px; margin:12px auto 0; }
+  .sw i { flex:1; height:22px; border-radius:6px; border:1px solid rgba(127,127,127,.3); }
+
+  /* 夜（決定済み） */
+  .night  { --bg:#14232B; --card:#1C3039; --shade:#233B45; --text:#ECE6D8; --soft:#D5CFC2; --muted:#9AA7AC; --quote:#F1D9A8;
+            --accent:#E2A84B; --on-accent:#14232B; --ribbon:#E2A84B; --tabbar:#101C22; --line:#101C22; --tab-on:#E2A84B; --mark-book:#ECE6D8; }
+  /* 朝1：朝の空 */
+  .sky    { --bg:#F2F6F8; --card:#FFFFFF; --shade:#E4EDF1; --text:#1F3640; --soft:#33505B; --muted:#546B77; --quote:#8A5A12;
+            --accent:#E8A23A; --on-accent:#1F3640; --ribbon:#E8A23A; --tabbar:#FFFFFF; --line:#E4EDF1; --tab-on:#8A5A12; --mark-book:#1F3640; }
+  /* 朝2：朝露の庭 */
+  .leaf   { --bg:#F1F6F1; --card:#FFFFFF; --shade:#E2EDE3; --text:#1E3A2E; --soft:#33503F; --muted:#526A5D; --quote:#8A5A12;
+            --accent:#E8A23A; --on-accent:#1E3A2E; --ribbon:#E8A23A; --tabbar:#FFFFFF; --line:#E2EDE3; --tab-on:#8A5A12; --mark-book:#1E3A2E; }
+  /* 朝3：朝日の差す机 */
+  .sun    { --bg:#FBF7EC; --card:#FFFFFF; --shade:#F3EBD6; --text:#2B3238; --soft:#454D54; --muted:#62686E; --quote:#8A5A12;
+            --accent:#E8A23A; --on-accent:#2B3238; --ribbon:#E8A23A; --tabbar:#FFFFFF; --line:#F3EBD6; --tab-on:#8A5A12; --mark-book:#2B3238; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>朝の配色サンプル（ライトモード）</h1>
+  <p class="lead">一番左が決定済みの「夜の読書灯」です。右の3つが、朝活の時間をイメージした明るい表示の候補です。どれも、ボタンと栞には夜と同じ「灯り」の色を使い、昼と夜で同じアプリだとわかるようにしています。</p>
+
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <defs>
+      <g id="mark">
+        <circle cx="50" cy="40" r="30" fill="#E2A84B" opacity=".16"/>
+        <circle cx="50" cy="40" r="19" fill="#E2A84B" opacity=".16"/>
+        <path d="M50 60 C 41 54, 28 53, 16 56 V 76 C 28 73, 41 74, 50 80 Z" fill="var(--mark-book)"/>
+        <path d="M50 60 C 59 54, 72 53, 84 56 V 76 C 72 73, 59 74, 50 80 Z" fill="var(--mark-book)"/>
+        <path d="M50 60 V 36" stroke="#E2A84B" stroke-width="4.5" stroke-linecap="round" fill="none"/>
+        <path d="M50 42 C 48 30, 38 24, 26 26 C 28 38, 38 44, 50 42 Z" fill="#E2A84B"/>
+        <path d="M50 38 C 52 26, 62 19, 74 21 C 72 33, 62 39, 50 38 Z" fill="#E2A84B"/>
+      </g>
+      <g id="shelf-off" class="line"><rect x="3.5" y="6" width="4" height="13.5" rx="1.2"/><rect x="8.5" y="4" width="4" height="15.5" rx="1.2"/><rect x="14.6" y="5.2" width="4" height="14.6" rx="1.2" transform="rotate(-14 16.6 19.5)"/><path d="M2.5 20.5 H 21.5"/></g>
+      <g id="note-on"><path class="fill" d="M6.2 2.8 H 15.6 C 16 2.8 16.3 2.9 16.6 3.2 L 19.4 6 C 19.7 6.3 19.8 6.6 19.8 7 V 20.2 C 19.8 20.8 19.4 21.2 18.8 21.2 H 6.2 C 5.6 21.2 5.2 20.8 5.2 20.2 V 3.8 C 5.2 3.2 5.6 2.8 6.2 2.8 Z"/><path d="M9 2.8 V 11 L 11 9.5 L 13 11 V 2.8 Z" fill="var(--tabbar)"/><path d="M9 15 H 16 M9 17.8 H 13.5" fill="none" stroke="var(--tabbar)" stroke-width="1.9" stroke-linecap="round"/></g>
+      <g id="me-off" class="line"><circle cx="12" cy="8.5" r="4"/><path d="M4.5 20.5 C 5.5 16.6 8.4 14.8 12 14.8 S 18.5 16.6 19.5 20.5"/></g>
+    </defs>
+  </svg>
+
+  <div class="grid">
+    <section class="opt">
+      <h2>夜：夜の読書灯（決定済み）</h2>
+      <p class="c">仕事終わり。深い青緑の部屋に、電球色の灯り。</p>
+      <div class="phone night" id="p-night"></div>
+      <div class="sw"><i style="background:#14232B"></i><i style="background:#1C3039"></i><i style="background:#233B45"></i><i style="background:#ECE6D8"></i><i style="background:#E2A84B"></i></div>
+    </section>
+    <section class="opt">
+      <h2>朝1：朝の空</h2>
+      <p class="c">早朝の澄んだ空気。うっすら青みのある白に、朝日の灯り。文字は夜の部屋と同じ青緑系で、昼夜のつながりが一番強い。</p>
+      <div class="phone sky"></div>
+      <div class="sw"><i style="background:#F2F6F8"></i><i style="background:#FFFFFF"></i><i style="background:#E4EDF1"></i><i style="background:#1F3640"></i><i style="background:#E8A23A"></i></div>
+    </section>
+    <section class="opt">
+      <h2>朝2：朝露の庭</h2>
+      <p class="c">朝露に濡れた庭の緑。若葉のような、みずみずしい白。「芽」を育てる朝のイメージに一番近い。</p>
+      <div class="phone leaf"></div>
+      <div class="sw"><i style="background:#F1F6F1"></i><i style="background:#FFFFFF"></i><i style="background:#E2EDE3"></i><i style="background:#1E3A2E"></i><i style="background:#E8A23A"></i></div>
+    </section>
+    <section class="opt">
+      <h2>朝3：朝日の差す机（採用）</h2>
+      <p class="c">窓から朝日が差しこむ机。光を含んだあたたかい白。3つの中で一番やわらかく、目にやさしい。</p>
+      <div class="phone sun"></div>
+      <div class="sw"><i style="background:#FBF7EC"></i><i style="background:#FFFFFF"></i><i style="background:#F3EBD6"></i><i style="background:#2B3238"></i><i style="background:#E8A23A"></i></div>
+    </section>
+  </div>
+</div>
+<template id="screen">
+  <div class="bar">
+    <span class="logo"><svg viewBox="10 8 80 80" aria-hidden="true"><use href="#mark"/></svg>SHIORIME</span>
+    <span class="rest">AI提案 本日あと3回</span>
+  </div>
+  <div class="content">
+    <div class="card">
+      <div class="ribbon" aria-hidden="true"></div>
+      <p class="book">嫌われる勇気</p>
+      <p class="meta">岸見一郎・古賀史健　P.142</p>
+      <p class="quote">「他者の課題には踏み込まない」</p>
+      <p class="body">上司の機嫌を自分の責任だと思い込んで、会議で黙ってしまうことが多かった。</p>
+    </div>
+    <div class="ai">
+      <small>AIからの深掘り</small>
+      <p>黙ってしまう直前、頭の中ではどんな言葉が浮かんでいますか？</p>
+      <div class="btn">回答する</div>
+    </div>
+    <p class="note">気づきの登録は何件でもできます</p>
+  </div>
+  <nav class="tabs">
+    <span class="tab"><svg viewBox="0 0 24 24"><use href="#shelf-off"/></svg>本棚</span>
+    <span class="tab on"><svg viewBox="0 0 24 24"><use href="#note-on"/></svg>気づき</span>
+    <span class="tab"><svg viewBox="0 0 24 24"><use href="#me-off"/></svg>プロフィール</span>
+  </nav>
+</template>
+<script>
+  var t = document.getElementById('screen');
+  document.querySelectorAll('.phone').forEach(function (p) { p.appendChild(t.content.cloneNode(true)); });
+</script>
+</body>
+</html>

@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SHIORIME 動きとフォーカス</title>
+<link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&family=Kiwi+Maru:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root { --page-bg:#E3E5E3; --page-ink:#23272A; --page-sub:#5D6368;
+          --maru:"Zen Maru Gothic","Hiragino Maru Gothic ProN",sans-serif; --kiwi:"Kiwi Maru","Hiragino Maru Gothic ProN",serif;
+          --t-quick:100ms; --t-base:200ms; --t-move:300ms; --ease-in:cubic-bezier(.4,0,1,1); --ease-out:cubic-bezier(0,0,.2,1); }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --page-bg:#1A1C1E; --page-ink:#E6E6E2; --page-sub:#A2A7AC; } }
+  :root[data-theme="dark"] { --page-bg:#1A1C1E; --page-ink:#E6E6E2; --page-sub:#A2A7AC; }
+  .reduce { --t-move:0ms; }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--page-bg); color:var(--page-ink); font-family:var(--maru); line-height:1.6; }
+  .wrap { max-width:1000px; margin:0 auto; padding:32px 16px 56px; display:grid; gap:28px; grid-template-columns:repeat(auto-fit,minmax(300px,1fr)); align-items:start; }
+  h1 { font-size:22px; margin:0 0 6px; } .lead { font-size:14px; color:var(--page-sub); margin:0 0 14px; }
+  .ctrl { display:flex; flex-wrap:wrap; gap:8px; margin:0 0 14px; }
+  .ctrl button { font:inherit; font-size:13px; min-height:40px; padding:6px 14px; border-radius:20px; border:1px solid currentColor; background:transparent; color:var(--page-ink); cursor:pointer; }
+  .ctrl button[aria-pressed="true"] { background:var(--page-ink); color:var(--page-bg); }
+  table { width:100%; border-collapse:collapse; font-size:13px; } th,td { text-align:left; vertical-align:top; padding:7px 6px; border-top:1px solid rgba(127,127,127,.25); } th { font-weight:500; color:var(--page-sub); width:7.5em; }
+
+  .night { --bg:#14232B; --card:#1C3039; --shade:#233B45; --text:#ECE6D8; --soft:#D5CFC2; --muted:#9AA7AC; --accent:#E2A84B; --on-accent:#14232B; --focus:#E2A84B; --ok:#8FC1A0; --toast:#ECE6D8; --err:#EE9A8F; --on-err:#14232B; --on-toast:#14232B; --dim:rgba(5,10,13,.62); }
+  .morning { --bg:#FBF7EC; --card:#FFFFFF; --shade:#F3EBD6; --text:#2B3238; --soft:#454D54; --muted:#62686E; --accent:#E8A23A; --on-accent:#2B3238; --focus:#8A5A12; --ok:#2A7350; --toast:#2B3238; --err:#AE4035; --on-err:#FFFFFF; --on-toast:#FBF7EC; --dim:rgba(43,50,56,.45); }
+
+  .phone { position:relative; max-width:330px; width:100%; height:600px; margin:0 auto; border-radius:28px; overflow:hidden; background:var(--bg); color:var(--text); border:1px solid rgba(127,127,127,.3); }
+  .in { padding:20px 16px; display:grid; gap:12px; }
+  .b { font:inherit; font-weight:700; font-size:15px; min-height:48px; border-radius:999px; border:0; cursor:pointer; background:var(--accent); color:var(--on-accent);
+       transition:transform var(--t-quick) var(--ease-out), filter var(--t-quick) var(--ease-out); }
+  .b.danger { background:var(--err); color:var(--on-err); }
+  .b.sec { background:transparent; color:var(--text); border:1.5px solid var(--text); }
+  .b:active { transform:scale(.97); filter:brightness(.92); }
+  /* フォーカス：キーボード操作のときだけ表示 */
+  :where(.phone) :focus { outline:none; }
+  :where(.phone) :focus-visible { outline:2px solid var(--focus); outline-offset:3px; }
+  .field { font:inherit; font-size:16px; width:100%; padding:12px 14px; border-radius:12px; border:1.5px solid var(--shade); background:var(--card); color:var(--text); }
+  .field:focus-visible { outline-offset:2px; }
+
+  .acc { background:var(--card); border-radius:16px; overflow:hidden; }
+  .acc button { all:unset; box-sizing:border-box; width:100%; display:flex; justify-content:space-between; align-items:center; padding:14px 16px; min-height:48px; cursor:pointer; font-size:14px; border-radius:16px; }
+  .acc svg { width:18px; height:18px; transition:transform var(--t-base) var(--ease-out); }
+  .acc[data-open="true"] svg { transform:rotate(180deg); }
+  .acc .panel { display:grid; grid-template-rows:0fr; transition:grid-template-rows var(--t-base) var(--ease-out); }
+  .acc[data-open="true"] .panel { grid-template-rows:1fr; }
+  .acc .panel > div { overflow:hidden; } .acc .panel p { margin:0; padding:0 16px 14px; font-size:13px; color:var(--soft); }
+
+  .skel { background:var(--card); border-radius:16px; padding:14px 16px; display:grid; gap:8px; }
+  .skel i { display:block; height:12px; border-radius:6px; background:var(--shade); animation:pulse 1.6s ease-in-out infinite; }
+  .reduce .skel i { animation:none; }
+  @keyframes pulse { 50% { opacity:.45; } }
+
+  .dim { position:absolute; inset:0; background:var(--dim); opacity:0; pointer-events:none; transition:opacity var(--t-move) var(--ease-out); }
+  .sheet { position:absolute; left:0; right:0; bottom:0; background:var(--card); border-radius:20px 20px 0 0; padding:10px 18px 22px; display:grid; gap:10px;
+           transform:translateY(100%); visibility:hidden; transition:transform var(--t-move) var(--ease-in), visibility 0s linear var(--t-move); }
+  .reduce .sheet { transition:opacity 200ms; transform:none; opacity:0; }
+  .open .dim { opacity:1; pointer-events:auto; }
+  .open .sheet { transform:translateY(0); visibility:visible; transition:transform var(--t-move) var(--ease-out), visibility 0s; }
+  .reduce.open .sheet { opacity:1; }
+  .sheet .grab { width:40px; height:5px; border-radius:3px; background:var(--shade); margin:0 auto 4px; }
+  .sheet h3 { margin:0; font-size:17px; } .sheet p { margin:0; font-size:14px; color:var(--soft); }
+
+  .toast { position:absolute; left:16px; right:16px; bottom:20px; background:var(--toast); color:var(--on-toast); border-radius:14px; padding:12px 14px; display:flex; gap:10px; align-items:center; font-size:14px;
+           opacity:0; transform:translateY(12px); transition:opacity 150ms var(--ease-in), transform 150ms var(--ease-in); pointer-events:none; }
+  .toast.show { opacity:1; transform:none; transition:opacity var(--t-base) var(--ease-out), transform var(--t-base) var(--ease-out); }
+  .reduce .toast { transform:none; }
+  .toast .ok { width:22px; height:22px; border-radius:50%; background:var(--ok); display:grid; place-items:center; flex:none; }
+  .toast svg { width:13px; height:13px; fill:none; stroke:var(--on-toast); stroke-width:3; stroke-linecap:round; stroke-linejoin:round; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <section>
+    <h1>動きとフォーカスの見本</h1>
+    <p class="lead">右の画面のボタンを押すと、決めた長さで動きます。キーボードの Tab キーを押すと、フォーカスの表示が見られます（マウスやタップでは表示されません）。</p>
+    <div class="ctrl">
+      <button type="button" id="tNight" aria-pressed="true">夜</button>
+      <button type="button" id="tMorning" aria-pressed="false">朝</button>
+      <button type="button" id="tReduce" aria-pressed="false">動きを減らす設定</button>
+    </div>
+    <p class="lead" style="margin:0 0 6px">トーストの表示時間（比べられます）</p>
+    <div class="ctrl">
+      <button type="button" class="dur" data-ms="4000" aria-pressed="false">4秒（前の案）</button>
+      <button type="button" class="dur" data-ms="3000" aria-pressed="true">3秒（今回の案）</button>
+      <button type="button" class="dur" data-ms="2500" aria-pressed="false">2.5秒</button>
+    </div>
+    <table>
+      <tr><th>100ms</th><td>押したときの反応（ボタンが少し縮む）</td></tr>
+      <tr><th>200ms</th><td>トースト・アコーディオンの開閉</td></tr>
+      <tr><th>300ms</th><td>シート・モーダルの出入り</td></tr>
+      <tr><th>3秒</th><td>トーストを表示しておく時間</td></tr>
+      <tr><th>1.6秒</th><td>スケルトンの明滅の1周</td></tr>
+      <tr><th>フォーカス</th><td>2pxの線を3px離して囲む。夜は読書灯、朝は朝日に照らされた紙の色</td></tr>
+    </table>
+  </section>
+
+  <div class="phone night" id="phone">
+    <div class="in">
+      <input class="field" placeholder="本のタイトルで検索" aria-label="本のタイトルで検索">
+      <button class="b" type="button" id="bToast">保存する（トースト）</button>
+      <button class="b sec" type="button" id="bSheet">削除する（シート）</button>
+      <div class="acc" id="acc" data-open="false">
+        <button type="button" aria-expanded="false" id="bAcc">過去のAI提案（2件）<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9 L12 15 L18 9"/></svg></button>
+        <div class="panel"><div><p>2026年10月20日　次の会議で、結論から一言だけ発言する</p><p>2026年10月12日　朝の15分を読書にあてる</p></div></div>
+      </div>
+      <div class="skel" aria-label="読み込み中"><i style="width:40%"></i><i></i><i style="width:75%"></i></div>
+    </div>
+    <div class="dim" id="dim"></div>
+    <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="sh">
+      <div class="grab"></div>
+      <h3 id="sh">この気づきを削除しますか？</h3>
+      <p>削除すると、元に戻せません。</p>
+      <button class="b danger" type="button" id="bClose1">削除する</button>
+      <button class="b sec" type="button" id="bClose2">キャンセル</button>
+    </div>
+    <div class="toast" role="status" id="toast"><span class="ok"><svg viewBox="0 0 24 24"><path d="M5 12.5 L 10 17 L 19 7.5"/></svg></span>気づきを保存しました</div>
+  </div>
+</div>
+<script>
+  var ph = document.getElementById('phone'), toast = document.getElementById('toast'), timer, opener, dur = 3000;
+  document.querySelectorAll('.dur').forEach(function(b){ b.onclick = function(){ dur = +b.dataset.ms; document.querySelectorAll('.dur').forEach(function(x){ x.setAttribute('aria-pressed', x === b); }); }; });
+  function pick(a, b) { a.setAttribute('aria-pressed','true'); b.setAttribute('aria-pressed','false'); }
+  tNight.onclick = function(){ ph.classList.replace('morning','night'); pick(tNight,tMorning); };
+  tMorning.onclick = function(){ ph.classList.replace('night','morning'); pick(tMorning,tNight); };
+  tReduce.onclick = function(){ var on = ph.classList.toggle('reduce'); tReduce.setAttribute('aria-pressed', on); };
+  bToast.onclick = function(){ toast.classList.add('show'); clearTimeout(timer); timer = setTimeout(function(){ toast.classList.remove('show'); }, dur); };
+  bSheet.onclick = function(){ opener = bSheet; ph.classList.add('open'); bClose2.focus({ preventScroll:true }); };
+  function close(){ ph.classList.remove('open'); if (opener) opener.focus({ preventScroll:true }); }
+  bClose1.onclick = close; bClose2.onclick = close; dim.onclick = close;
+  ph.addEventListener('keydown', function(e){ if (e.key === 'Escape' && ph.classList.contains('open')) close(); });
+  bAcc.onclick = function(){ var o = acc.dataset.open !== 'true'; acc.dataset.open = o; bAcc.setAttribute('aria-expanded', o); };
+</script>
+</body>
+</html>
