@@ -437,7 +437,8 @@ AI の応答は数秒〜最大約60秒（30秒×再試行1回）かかるため�
 | --- | --- |
 | 認証 | `POST /auth/register`・`POST /auth/login`・`POST /auth/logout` |
 | 自分 | `GET /me`・`GET /me/ai-usage`・`PATCH /me`（属性）・`POST /me/password`・`POST /me/withdraw`（退会） |
-| 本 | `GET /books`・`GET /books/search`（Google Books）・`POST /books`・`GET/PATCH/DELETE /books/{id}` |
+| 世の中の本（Google Books） | `GET /catalog/search` |
+| 本 | `GET /books`・`POST /books`・`GET/PATCH/DELETE /books/{id}` |
 | 気づき一覧 | `GET /insight-groups`・`GET /insight-groups/{元の本の ID}/insights` |
 | 気づき | `POST /insights`・`GET/PATCH/DELETE /insights/{id}` |
 | AI提案 | `POST /insights/{id}/ai-proposals`（開始）・`GET /ai-proposals/{id}`・`POST /ai-proposals/{id}/answer`・`POST /ai-proposals/{id}/retry`・`POST /ai-proposals/{id}/abandon` |
@@ -622,3 +623,44 @@ AI の応答は数秒〜最大約60秒（30秒×再試行1回）かかるため�
 - 1冊ずつに返すのは、画面に表示するもの（表紙の URL・タイトル・読書ステータス）と、本の詳細へ移るための `id` だけ。理由：一覧の API は、その画面に必要な最小限にするため。著者・ISBN・登録した日時などは本棚に表示しないので返さない（登録した日時は並び順に使うだけで、並べるのはサーバー）。
 - 表紙の URL がない本は `cover_url` を `null` で返し、画面がアイコン画像を出す。
 - 項目名は `book_id` ではなく `id`。理由：本の一覧の中の1冊なので「本の」を言わなくても伝わるため。気づきの中で「どの本の気づきか」を表すときは、気づき自身の `id` と区別するため `book_id` と書く。
+
+#### 本の検索（Google Books） `GET /api/v1/catalog/search`
+
+| 項目 | 内容 |
+| --- | --- |
+| 認証 | 必要 |
+| 受け取るもの（クエリパラメーター） | `q`（検索の言葉。必須。前後の空白を除いて空なら 422）、`offset`（何件目から。任意。付けなければ0） |
+| サーバーですること | ① 回数制限（1人1分10回）を確かめる ② API キーを付けて Google Books に21件（続きがあるかを知るために1件多く）を頼む ③ 表紙の URL を https に直し、タイトル・著者を整える ④ 20冊分の `google_volume_id` をまとめて1回でデータベースに聞き、自分の本棚にある本の ID を付ける |
+| 成功 | 200、下の形 |
+
+```json
+{
+  "items": [
+    {
+      "google_volume_id": "abc123",
+      "title": "嫌われる勇気",
+      "authors": "岸見一郎、古賀史健",
+      "published_year": 2013,
+      "cover_url": "https://…",
+      "info_link": "https://books.google.com/…",
+      "shelf_book_id": "3f2a…（本棚になければ null）"
+    }
+  ],
+  "next_offset": 20
+}
+```
+
+| エラー | ステータス | エラーコード |
+| --- | --- | --- |
+| 検索の言葉が空など | 422 | `VALIDATION_ERROR` |
+| 回数制限 | 429 | `SEARCH_RATE_LIMIT` |
+| Google Books の利用枠切れ | 503 | `BOOK_SEARCH_LIMIT`（4-5） |
+| Google Books の障害・時間切れ | 502 | `BOOK_SEARCH_FAILED` |
+
+- URL を `/books` の下ではなく `/catalog` に置く理由：`/books` の下はすべて「自分の本棚の本」を返すのに、検索で返すのは「まだ本棚に入っていない Google Books の本」で、別のものだから。第2段階の「本棚の中を探す」（`GET /books?q=…`）と見た目が似て取り違えるのを防ぐため。`/books/search` だと `/books/{book_id}` より先に定義する必要がある（FastAPI は上から URL の形で照らし合わせ、`/books/{book_id}` が先だと `search` を本の ID として扱い 422 になる）が、`/catalog` ならその注意も要らない。
+- URL は画面ではなくデータのまとまり（リソース）で作る。本の検索・登録の画面は `GET /catalog/search` と `POST /books` の2つを使う。
+- 続きは「何件目から」（`offset`）で受け取る。理由：Google Books が「何件目から」（`startIndex`）の数字でしか受け付けないため。本棚の一覧でカーソルを使った理由（途中の追加・削除で同じ本が2回出たり飛ばされたりする）は、利用者が「もっと見る」を押す数秒の間に検索結果が変わることはほぼないので、ここでは問題になりにくい。
+- `next_offset` を返し、続きがなければ `null`。理由：本棚の一覧の `next_cursor` と同じく「`null` なら続きなし」と画面の判断をそろえるため。続きがあるかは、21件目があるかで判断する（Google Books が返す総件数は目安で正確ではないため）。
+- 1冊ずつに返すのは、画面に表示するもの（表紙・タイトル・著者・出版年・「Google Books で見る」のリンク）と、表示しないが押したときに使う `google_volume_id`（本棚に追加するとき）、`shelf_book_id`（本棚にある本の詳細へ移るとき）。
+- `shelf_book_id` は、本棚にあれば自分のデータベースの本の ID、なければ `null`。「あるか」と「ID」の2つの項目にしない理由：「あるのに ID が null」のようなありえない組み合わせを作らないため。画面は `shelf_book_id` があれば「本棚にあります」を出して `/books/{shelf_book_id}` へ、なければ追加のシートを出す。
+- 本棚にあるかは、20冊分の `google_volume_id` をまとめて1回で聞く（`IN` 句）。1冊ずつ聞くと問い合わせが20回になる（N＋1問題）ため。自分の本だけを対象にする（認可）。
