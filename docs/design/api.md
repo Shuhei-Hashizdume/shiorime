@@ -438,7 +438,7 @@ AI の応答は数秒〜最大約60秒（30秒×再試行1回）かかるため�
 | 認証 | `POST /auth/register`・`POST /auth/login`・`POST /auth/logout` |
 | 自分 | `GET /me`・`GET /me/ai-usage`・`PATCH /me`（属性）・`POST /me/password`・`POST /me/withdraw`（退会） |
 | 世の中の本（Google Books） | `GET /catalog/search` |
-| 本 | `GET /books`・`POST /books`・`GET/PATCH/DELETE /books/{id}` |
+| 本 | `GET /books`・`POST /books`（手入力）・`POST /books/from-catalog`（検索結果から）・`GET/PATCH/DELETE /books/{id}` |
 | 気づき一覧 | `GET /insight-groups`・`GET /insight-groups/{元の本の ID}/insights` |
 | 気づき | `POST /insights`・`GET/PATCH/DELETE /insights/{id}` |
 | AI提案 | `POST /insights/{id}/ai-proposals`（開始）・`GET /ai-proposals/{id}`・`POST /ai-proposals/{id}/answer`・`POST /ai-proposals/{id}/retry`・`POST /ai-proposals/{id}/abandon` |
@@ -664,3 +664,48 @@ AI の応答は数秒〜最大約60秒（30秒×再試行1回）かかるため�
 - 1冊ずつに返すのは、画面に表示するもの（表紙・タイトル・著者・出版年・「Google Books で見る」のリンク）と、表示しないが押したときに使う `google_volume_id`（本棚に追加するとき）、`shelf_book_id`（本棚にある本の詳細へ移るとき）。
 - `shelf_book_id` は、本棚にあれば自分のデータベースの本の ID、なければ `null`。「あるか」と「ID」の2つの項目にしない理由：「あるのに ID が null」のようなありえない組み合わせを作らないため。画面は `shelf_book_id` があれば「本棚にあります」を出して `/books/{shelf_book_id}` へ、なければ追加のシートを出す。
 - 本棚にあるかは、20冊分の `google_volume_id` をまとめて1回で聞く（`IN` 句）。1冊ずつ聞くと問い合わせが20回になる（N＋1問題）ため。自分の本だけを対象にする（認可）。
+
+#### 本棚に追加（検索結果から） `POST /api/v1/books/from-catalog`
+
+| 項目 | 内容 |
+| --- | --- |
+| 認証 | 必要 |
+| 受け取るもの | `google_volume_id`、`status`（`reading`／`finished`）の2つだけ。ほかの項目（`title` など）を送られたら 422（`extra="forbid"`） |
+| サーバーですること | ① 自分の本棚に同じ `google_volume_id` の本がないか確かめる（あれば 409） ② Google Books から `google_volume_id` で情報（タイトル・著者・表紙・ISBN）を取り直し、タイトル・著者を切り詰め（4-1）、表紙の URL を https に直す ③ 保存する |
+| 成功 | 201、`Location: /api/v1/books/{本の ID}`、`{"id": "…"}` |
+
+| エラー | ステータス | エラーコード |
+| --- | --- | --- |
+| 入力の誤り | 422 | `VALIDATION_ERROR` |
+| 同じ本が本棚にある | 409 | `BOOK_ALREADY_ON_SHELF`（`error.details.book_id` に本棚にある本の ID） |
+| Google Books にその本がない（でたらめな番号） | 404 | `CATALOG_BOOK_NOT_FOUND` |
+| Google Books の利用枠切れ | 503 | `BOOK_SEARCH_LIMIT` |
+| Google Books の障害・時間切れ | 502 | `BOOK_SEARCH_FAILED` |
+
+- URL：本を1冊作る操作なので POST。URL に動詞（register など）は入れない（メソッドが「何をするか」、URL が「何に対してか」を表すため）。まとまりの名前は複数形（`/books`）にそろえる。増えるのは自分の本棚なので `/books` のまとまりに置き、作り方の違い（Google Books の目録から）を `from-catalog` で表す。`POST /catalog` にしない理由：「世の中の本の目録に1冊増やす」と読めてしまうため。`/books/{book_id}` より先に定義する。
+- 手入力と API を分ける理由：受け取るもの（`google_volume_id`／タイトル・著者）も、サーバーですること（Google Books から取り直す／入力のまま保存）も違い、役割（責務）が違うため。1つにまとめて `source` で送り分ける形（判別共用体）より、確かめ方が単純で、テストも分けて書ける。
+- 受け取るものを `google_volume_id` と `status` だけにする理由：タイトル・著者・表紙・ISBN は、改ざんを防ぐためサーバーが Google Books から取り直すので、画面から送ってもらう必要がないため。読書ステータスだけは利用者が選んだもので、Google Books からは手に入らないため。決めた項目以外を断るのは、送ればタイトルを変えられると誤解された作りのまま、将来うっかりその値を使うコードを書くのを防ぐため。
+- 重複したときに本棚にある本の ID を返す理由：要件定義書のとおり、画面が「この本は既に本棚にあります」と出して本の詳細へ案内するため。エラーの形に `details` を足し、画面が次の行動に必要な情報を受け取れるようにする。
+- 処理の順番を「本棚にあるか確かめる → Google Books → 保存」にする理由：本棚にすでにあれば Google Books に聞く必要がないため。データベースは速く失敗しにくく、Google Books はインターネットの向こうで遅く失敗しうるので、速いほうを先にしてだめならすぐ終える（早期リターン）。Google Books の利用枠もむだに使わない。
+- 確かめてから保存するまでの間（Google Books に聞いている約1秒）に、別の端末で同じ本が追加されると、どちらも「ない」と確かめて2冊保存されうる（TOCTOU）。これを防ぐため、データベースに「`user_id` と `google_volume_id` の組み合わせは1つまで」の決まり（複合ユニーク制約）を付ける（database.md）。保存で引っかかったら（`IntegrityError`）、本棚にある本の ID を取り直して 409 `BOOK_ALREADY_ON_SHELF` を返す。新しい列は要らない。受付番号（冪等キー）は同じ依頼の重複を防ぐもので、別々の端末からの別々の依頼は防げないため使わない。手入力の本は `google_volume_id` が `NULL` で、PostgreSQL では NULL どうしは同じとみなされないので、何冊でも入る（要件どおり手入力は重複を判定しない）。
+- 成功したら ID だけを返す。理由：本の詳細の画面は、追加の直後・再読み込み・本棚から開いたときのどれでも `GET /books/{本の ID}` で情報を取るため、ここで詳しく返しても結局もう一度取るため。作ったものの場所を `Location` ヘッダーで知らせる（HTTP の作法）。
+- テスト：同時に2つ送っても1冊しか入らないこと、重複で 409 と本の ID が返ること、重複のときは Google Books を呼ばずに 409 になること。
+
+#### 本棚に追加（手入力） `POST /api/v1/books`
+
+| 項目 | 内容 |
+| --- | --- |
+| 認証 | 必要 |
+| 受け取るもの | `title`（必須・200文字まで）、`author`（任意・100文字まで）、`status`（`reading`／`finished`）。ほかの項目は 422 |
+| サーバーですること | 入力を確かめて（前後の空白を除く・NFC に正規化・見た目の1文字で数える。5-1）保存する。`google_volume_id`・表紙の URL・ISBN は `NULL`。重複は判定しない |
+| 成功 | 201、`Location: /api/v1/books/{本の ID}`、`{"id": "…"}` |
+| エラー | 422 `VALIDATION_ERROR`（タイトルが空・長すぎるなど。画面の文は screens.md「2.」） |
+
+- 著者が空のとき：項目がない・`null`・`""`・空白だけの4通りとも、空白を除いたあと空なら `NULL` として保存する。理由：`""` と `NULL` が混ざると「著者がいない本」を扱うたびに両方を気にする必要があるため、`NULL` の1つにそろえる（要件定義書の「空白だけの入力は未入力として扱う」のとおり）。Google Books に著者がない本も `NULL`。
+- 手入力の本かどうかは `google_volume_id` が `NULL` かで判定する（要件定義書 5.2。手入力の本だけ後から編集できる）。
+
+#### 本の詳細 `GET /api/v1/books/{book_id}`（作成中）
+
+- 本の詳細の画面を開くたびに必要な情報（本の情報・読書ステータス・この本の気づきの件数）を1回でまとめて返す。理由：どれも本の詳細を開いたときに毎回必要で、呼ぶタイミングが同じため（`GET /me` と残り回数を分けたのは、呼ぶタイミングが違ったため）。気づきの件数はデータベースで数える（`COUNT`）。
+- `google_volume_id` を返し、画面は「`null` なら手入力の本」として「本の情報を編集」を出す。理由：Google Books の本を編集する予定がなく、項目を増やさずに済むため。サーバーの編集の API でも同じ判断を必ず行い（画面を書き換えて送られることがあるため）、「Google Books の本の編集は断られる」をテストに入れて、画面とサーバーの判断の食い違いを防ぐ。将来2か所に書くのを避けたくなったら、サーバーが判断した `editable` を返す形に変える（項目を足すだけ）。
+- 自分の本でない・存在しない・削除済みの場合は、どれも 404 `BOOK_NOT_FOUND`（他人の本があることを知らせないため）。`book_id` は UUID 型で受け取る（UUID でなければ 422）。
