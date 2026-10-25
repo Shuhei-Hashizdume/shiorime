@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SHIORIME 保存時に本が削除されていた場合の画面案</title>
+<link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&family=Kiwi+Maru:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root { --page-bg:#E3E5E3; --page-ink:#23272A; --page-sub:#5D6368;
+          --maru:"Zen Maru Gothic","Hiragino Maru Gothic ProN",sans-serif; --kiwi:"Kiwi Maru","Hiragino Maru Gothic ProN",serif; }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --page-bg:#1A1C1E; --page-ink:#E6E6E2; --page-sub:#A2A7AC; } }
+  :root[data-theme="dark"] { --page-bg:#1A1C1E; --page-ink:#E6E6E2; --page-sub:#A2A7AC; }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--page-bg); color:var(--page-ink); font-family:var(--maru); line-height:1.6; }
+  .wrap { max-width:1240px; margin:0 auto; padding:32px 16px 56px; }
+  h1 { font-size:22px; margin:0 0 6px; } .lead { font-size:14px; color:var(--page-sub); margin:0 0 24px; max-width:52em; }
+  .grid { display:grid; gap:32px 20px; grid-template-columns:repeat(auto-fit,minmax(270px,1fr)); }
+  .opt > h2 { font-size:16px; margin:12px 0 2px; } .opt > p { font-size:13px; color:var(--page-sub); margin:0; }
+
+  .night { --bg:#14232B; --card:#1C3039; --shade:#233B45; --text:#ECE6D8; --soft:#D5CFC2; --muted:#9AA7AC; --accent:#E2A84B; --on-accent:#14232B; --on:#E2A84B; --quote:#F1D9A8; --paper:#24363A; --err:#EE9A8F; --dim:rgba(5,10,13,.62); }
+  .phone { position:relative; width:100%; max-width:300px; height:620px; margin:0 auto; border-radius:28px; overflow:hidden; display:flex; flex-direction:column;
+           background:var(--bg); color:var(--text); border:1px solid rgba(127,127,127,.3); }
+  .top { display:flex; align-items:center; justify-content:space-between; padding:12px 12px 4px 8px; }
+  .top .x { width:44px; height:44px; display:flex; align-items:center; justify-content:center; } .top .x svg { width:24px; height:24px; }
+  .top h3 { margin:0; font-size:16px; flex:1; padding-left:2px; }
+  .save { min-height:40px; padding:0 18px; border-radius:999px; display:flex; align-items:center; font-weight:700; font-size:14px; background:var(--accent); color:var(--on-accent); }
+  .body { flex:1; overflow:hidden; padding:4px 16px 16px; }
+  .book { display:flex; gap:10px; align-items:center; margin:0 0 14px; }
+  .book .cv { width:28px; height:42px; border-radius:3px; background:#3E6A7A; flex:none; }
+  .book b { font-size:14px; display:block; line-height:1.4; } .book span { font-size:11px; color:var(--muted); }
+  .row { display:flex; justify-content:space-between; align-items:baseline; margin:12px 0 6px; }
+  .lab { font-size:13px; color:var(--soft); } .lab em { font-style:normal; font-size:11px; color:var(--muted); margin-left:4px; }
+  .lab b { font-size:11px; color:var(--on); margin-left:4px; }
+  .cnt { font-size:11px; color:var(--muted); } .cnt.bad { color:var(--err); font-weight:700; }
+  .field { background:var(--card); border-radius:12px; padding:11px 14px; font-size:15px; border:1.5px solid var(--shade); line-height:1.75; }
+  .field.ph { color:var(--muted); } .field.focus { border-color:var(--on); } .field.bad { border-color:var(--err); }
+  .quote { position:relative; font-family:var(--kiwi); background:var(--paper); border-color:transparent; padding-left:36px; }
+  .quote svg { position:absolute; left:11px; top:14px; width:16px; height:16px; color:var(--quote); }
+  .page { display:flex; align-items:center; gap:6px; width:132px; } .page span { color:var(--muted); font-size:14px; }
+  .area { min-height:150px; }
+  .msg { display:flex; gap:6px; color:var(--err); font-size:12px; margin-top:6px; line-height:1.6; } .msg svg { width:16px; height:16px; flex:none; margin-top:1px; }
+  .warn { font-size:11px; color:var(--muted); margin:8px 0 0; line-height:1.6; }
+  .info { font-size:12px; color:var(--muted); background:var(--card); border-radius:10px; padding:8px 12px; margin:0 0 6px; }
+  .line { fill:none; stroke:currentColor; stroke-width:1.9; stroke-linecap:round; stroke-linejoin:round; } .fill { fill:currentColor; }
+  .dim { position:absolute; inset:0; background:var(--dim); }
+  .sheet { position:absolute; left:0; right:0; bottom:0; background:var(--card); border-radius:20px 20px 0 0; padding:10px 18px 20px; }
+  .grab { width:40px; height:5px; border-radius:3px; background:var(--shade); margin:0 auto 12px; }
+  .sheet h3 { margin:0 0 8px; font-size:20px; line-height:1.4; } .sheet p { margin:0 0 6px; font-size:13px; color:var(--muted); line-height:1.8; }
+  .sheet .btn { font-weight:500; font-size:16px; }
+  .btn { display:flex; align-items:center; justify-content:center; min-height:48px; border-radius:999px; font-weight:700; font-size:15px; margin-top:10px; }
+  .btn.primary { background:var(--accent); color:var(--on-accent); } .btn.sec { border:1.5px solid var(--text); }
+  .lf { background:var(--bg); border-radius:12px; padding:10px 14px; font-size:15px; border:1.5px solid var(--shade); min-height:46px; color:var(--muted); margin-top:8px; }
+  .lf.focus { border-color:var(--on); color:var(--text); }
+  .note2 { display:flex; gap:6px; font-size:12px; color:var(--soft); margin:2px 0 4px; } .note2 svg { width:16px; height:16px; flex:none; color:#8FC1A0; margin-top:2px; }
+  .lbanner { border:1px solid var(--on); background:rgba(226,168,75,.12); border-radius:12px; padding:10px 12px; font-size:13px; margin:8px 0 12px; }
+  .ttl { font-size:20px; font-weight:700; margin:8px 0 4px; }
+  .toast { position:absolute; left:16px; right:16px; bottom:24px; display:flex; gap:8px; align-items:center; background:var(--shade); border-radius:999px; padding:10px 16px; font-size:14px; }
+  .toast svg { width:18px; height:18px; color:#8FC1A0; }
+  .dbanner { display:flex; gap:8px; border:1px solid #D98C6A; background:rgba(217,140,106,.12); border-radius:12px; padding:10px 12px; font-size:13px; margin:4px 0 12px; line-height:1.6; }
+  .dbanner svg { width:18px; height:18px; flex:none; color:#D98C6A; margin-top:2px; }
+  .save.off { opacity:.35; }
+  .ttl2 { font-size:18px; font-weight:700; margin:8px 0 4px; }
+  .toast2 { position:absolute; left:16px; right:16px; bottom:24px; display:flex; gap:8px; align-items:center; background:var(--shade); border-radius:14px; padding:10px 16px; font-size:13px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>気づきの保存時に、本が本棚から削除されていた場合</h1>
+  <p class="lead">気づきを書く画面を開いている間に、別の端末でその本を本棚から削除し、そのあと「保存」を押した場面です（サーバーは 404 BOOK_NOT_FOUND を返す）。A は書いた内容を残したまま知らせる形、B は本ごとの気づき一覧へ戻す形です。文章は仮のものです。</p>
+
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <defs>
+      <g id="close" class="line"><path d="M6 6 L 18 18 M18 6 L 6 18"/></g>
+      <g id="qmark"><path class="fill" d="M3 13 C 3 8.5 5.2 5.2 9 4 L 9.8 5.6 C 7.7 6.6 6.6 8.2 6.5 10 H 9 V 16 H 3 Z M12.5 13 C 12.5 8.5 14.7 5.2 18.5 4 L 19.3 5.6 C 17.2 6.6 16.1 8.2 16 10 H 18.5 V 16 H 12.5 Z" transform="translate(0 2)"/></g>
+      <g id="alert" class="line"><circle cx="12" cy="12" r="9"/><path d="M12 7.5 V 12.8"/><path d="M12 16.3 V 16.4"/></g>
+    </defs>
+  </svg>
+
+  <div class="grid">
+    <section class="opt"><div class="phone night" data-s="da"></div><h2>A. 書いた内容を残して知らせる（推奨）</h2><p>画面は移らず、上に理由を出す。「保存」は押せなくする（何度押しても同じ結果のため）。書いた内容は消さないので、選んでコピーできる。「×」で閉じると本ごとの気づき一覧へ。</p></section>
+    <section class="opt"><div class="phone night" data-s="db"></div><h2>B. 本ごとの気づき一覧へ戻す</h2><p>404 を受けたらすぐ移り、トーストで知らせる。書いた内容はこの時点で失われる。</p></section>
+  </div>
+</div>
+<script>
+  function hd(t){ return '<div class="top"><span class="x" aria-label="閉じる"><svg viewBox="0 0 24 24"><use href="#close"/></svg></span><h3>'+t+'</h3><span class="save">保存</span></div>'; }
+  var book = '<div class="book"><div class="cv"></div><div><b>嫌われる勇気</b><span>岸見一郎、古賀史健</span></div></div>';
+  function quote(v, c){ return '<div class="row"><span class="lab">引用<em>任意</em></span><span class="cnt">'+(c||0)+' / 300</span></div><div class="field quote'+(v?'':' ph')+'"><svg viewBox="0 0 22 22"><use href="#qmark"/></svg>'+(v||'心に残った一文')+'</div>'; }
+  function page(v){ return '<div class="row"><span class="lab">ページ<em>任意</em></span></div><div class="field page'+(v?'':' ph')+'"><span>P.</span>'+(v||'142')+'</div>'; }
+  function area(v, c, cls, bad){ return '<div class="row"><span class="lab">気づき<b>必須</b></span><span class="cnt'+(bad?' bad':'')+'">'+c+' / 1,000</span></div><div class="field area'+(cls||'')+(v?'':' ph')+'">'+(v||'読んで考えたこと、自分の経験と結びついたことを書きましょう。')+'</div>'; }
+  var body1 = '上司の機嫌を自分の責任だと思い込んで、会議で黙ってしまうことが多かった。でも、それは上司の課題であって、私が引き受けるものではないのかもしれない。';
+  var html = {
+    da: '<div class="top"><span class="x" aria-label="閉じる"><svg viewBox="0 0 24 24"><use href="#close"/></svg></span><h3>気づきを書く</h3><span class="save off">保存</span></div><div class="body">' + book + '<div class="dbanner" role="alert"><svg viewBox="0 0 24 24" class="line"><use href="#alert"/></svg><div>この本は本棚から削除されたため、気づきを保存できませんでした。書いた内容は残っています。必要な部分はコピーしてください。</div></div>' + quote('他者の課題には踏み込まない', 13) + page('142') + area(body1, 72) + '</div>',
+    db: '<div class="top"><span class="x"><svg viewBox="0 0 24 24"><use href="#back"/></svg></span><h3></h3></div><div class="body"><div class="book"><div class="cv"></div><div><b>嫌われる勇気</b><span>岸見一郎、古賀史健</span></div></div><p class="warn" style="margin-top:24px">（本ごとの気づき一覧。「本棚から削除済み」の表示になる）</p></div><div class="toast2" role="status">この本は本棚から削除されたため、気づきを保存できませんでした</div>'
+  };
+  var _unused3 = {
+    a: '<div class="top"><span class="x"></span><h3></h3></div><div class="body"><div class="ttl">ログイン</div><div class="lbanner">ログインの有効期限が切れました。もう一度ログインしてください。</div><div class="lf">メールアドレス</div><div class="lf">パスワード</div><span class="btn primary" style="margin-top:16px">ログイン</span><p class="warn" style="text-align:center;margin-top:14px">書いていた気づきは、この時点で失われる</p></div>',
+    b1: hd('気づきを書く') + '<div class="body">' + book + quote('他者の課題には踏み込まない', 13) + page('142') + area(body1, 72) + '</div><div class="dim"></div><div class="sheet" role="dialog"><div class="grab"></div><h3>ログインの有効期限が切れました</h3><div class="note2"><svg viewBox="0 0 24 24" class="line"><circle cx="12" cy="12" r="9"/><path d="M8 12.5 L 11 15 L 16 9.5"/></svg>書いた内容はこの画面に残っています。ログインすると、そのまま保存します。</div><div class="lf focus">メールアドレス</div><div class="lf">パスワード</div><span class="btn primary">ログインして保存する</span><span class="btn sec">キャンセル</span></div>',
+    b2: '<div class="top"><span class="x"><svg viewBox="0 0 24 24"><use href="#close"/></svg></span><h3>気づきの詳細</h3></div><div class="body">' + book + '<div class="field" style="border-color:transparent"><p style="margin:0;font-size:14px;color:var(--soft)">' + body1 + '</p></div></div><div class="toast" role="status"><svg viewBox="0 0 24 24" class="line"><circle cx="12" cy="12" r="9"/><path d="M8 12.5 L 11 15 L 16 9.5"/></svg>気づきを保存しました</div>'
+  };
+  var _unused = {
+    new: hd('気づきを書く') + '<div class="body">' + book + quote() + page() + area('', 0, ' focus') + '<p class="warn">入力内容は、AI提案を受けるときにAI（OpenAI）に送信されます。個人情報は書かないでください。</p></div>',
+    typing: hd('気づきを書く') + '<div class="body">' + book + quote('他者の課題には踏み込まない', 13) + page('142') + area(body1, 72, ' focus') + '<p class="warn">入力内容は、AI提案を受けるときにAI（OpenAI）に送信されます。個人情報は書かないでください。</p></div>',
+    error: hd('気づきを書く') + '<div class="body">' + book + quote('他者の課題には踏み込まない', 13) + '<div class="row"><span class="lab">ページ<em>任意</em></span></div><div class="field page bad"><span>P.</span>12000</div><div class="msg"><svg viewBox="0 0 24 24" class="line"><use href="#alert"/></svg>1〜9999の数字で入力してください</div>' +
+      '<div class="row"><span class="lab">気づき<b>必須</b></span><span class="cnt">0 / 1,000</span></div><div class="field area bad ph" style="min-height:90px"></div><div class="msg"><svg viewBox="0 0 24 24" class="line"><use href="#alert"/></svg>気づきを入力してください</div></div>',
+    leave: hd('気づきを書く') + '<div class="body">' + book + quote('他者の課題には踏み込まない', 13) + page('142') + area(body1, 72) + '</div><div class="dim"></div><div class="sheet" role="dialog"><div class="grab"></div><h3>書きかけの気づきを破棄しますか？</h3><p>保存していない内容は失われます。</p><span class="btn primary">書き続ける</span><span class="btn sec">破棄して閉じる</span></div>',
+    edit: hd('気づきを編集') + '<div class="body">' + book + '<p class="info">編集しても、次の一歩（AI提案）はそのまま残ります。</p>' + quote('他者の課題には踏み込まない', 13) + page('142') + area(body1, 72) + '<p class="warn">入力内容は、AI提案を受けるときにAI（OpenAI）に送信されます。個人情報は書かないでください。</p></div>'
+  };
+  document.querySelectorAll('.phone').forEach(function(p){ p.innerHTML = html[p.dataset.s]; });
+</script>
+</body>
+</html>
