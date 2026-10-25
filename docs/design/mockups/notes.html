@@ -112,7 +112,7 @@
   function row(i){ return '<div class="row'+(i[4]?' deleted':'')+'">' + (i[1] ? '<div class="cv" style="background:'+i[1]+'"></div>' : '<div class="cv"><svg viewBox="10 8 80 80"><use href="#mark"/></svg></div>') +
       '<div class="m"><p class="t">'+i[0]+'</p><p class="c">気づき '+i[2]+'件</p><p class="d">最後に書いた日：'+i[3]+'</p>' + (i[4]?'<span class="gone">本棚から削除済み</span>':'') + '</div><svg viewBox="0 0 24 24"><use href="#next"/></svg></div>'; }
   function bar(name){ return '<div class="sortbar"><span>並び順：'+name+'</span><span class="sortbtn" role="button" aria-label="並び替え"><svg viewBox="0 0 24 24"><use href="#sort"/></svg></span></div>'; }
-  var hd = '<div class="head"><h3>気づき一覧</h3><span>気づき 16件</span></div>';
+  var hd = '<div class="head"><h3>気づき一覧</h3></div>';
   var recent = items.map(row).join('') + zeros.map(zrow).join('');
   var byMany = [items[2],items[0],items[1]].map(row).join('') + zeros.map(zrow).join('');
   var byFew = zeros.map(zrow).join('') + [items[1],items[0],items[2]].map(row).join('');
