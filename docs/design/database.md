@@ -60,7 +60,7 @@ SHIORIME のテーブル・列・制約・インデックスを決める文書�
 | 列 | 型 | 決まり |
 | --- | --- | --- |
 | `id` | `uuid` | 主キー。`DEFAULT uuidv7()` |
-| `email` | `text` | NOT NULL、一意。`CHECK (email = lower(email) AND email <> '')` |
+| `email` | `text` | NOT NULL、一意。`CHECK (email = lower(email) AND email <> '')`。1016まで（254×4） |
 | `password_hash` | `text` | NOT NULL |
 | `attribute` | `text` | NOT NULL。`high_school`・`university`・`working`・`homemaker`・`other` |
 | `email_verified` | `boolean` | NOT NULL、`DEFAULT false` |
@@ -121,8 +121,8 @@ SHIORIME のテーブル・列・制約・インデックスを決める文書�
 | `user_id` | `uuid` | NOT NULL。`users.id` への外部キー（`ON DELETE CASCADE`） |
 | `insight_id` | `uuid` | NOT NULL。`insights.id` への外部キー（`ON DELETE CASCADE`） |
 | `status` | `text` | NOT NULL。`generating_question`・`awaiting_answer`・`generating_plans`・`completed`・`question_failed`・`retry_limit_reached` |
-| `insight_body` | `text` | NOT NULL（始めた時点の気づきの本文の写し） |
-| `insight_quote` | `text` | 空でもよい（始めた時点の引用の写し） |
+| `insight_body` | `text` | NOT NULL（始めた時点の気づきの本文の写し）。4000まで |
+| `insight_quote` | `text` | 空でもよい（始めた時点の引用の写し）。1200まで |
 | `question` | `text` | 空でもよい（深掘りの作成中はまだない）。800まで（200×4） |
 | `answer` | `text` | 空でもよい。2000まで（500×4） |
 | `plans` | `jsonb` | 空でもよい（完了したときだけ入る）。配列で1〜3個 |
