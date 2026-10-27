@@ -84,7 +84,7 @@ SHIORIME のテーブル・列・制約・インデックスを決める文書�
 | `author` | `text` | 空でもよい。400まで（100×4） |
 | `cover_url` | `text` | 空でもよい |
 | `google_volume_id` | `text` | 空でもよい（手入力の本） |
-| `isbn` | `text` | 空でもよい。あるときは13桁の数字（`CHECK (isbn ~ '^[0-9]{13}$')`） |
+| `isbn` | `text` | 空でもよい。あるときは13桁の数字（`CHECK (isbn ~ '^[0-9]{13}$')`）。Google Books に13桁があるときだけ保存し、10桁しかない場合は `NULL`（api.md 7-3） |
 | `status` | `text` | NOT NULL。`reading`・`finished` |
 | `created_at` | `timestamptz` | NOT NULL、`DEFAULT now()` |
 
@@ -133,6 +133,7 @@ SHIORIME のテーブル・列・制約・インデックスを決める文書�
 | `completed_at` | `timestamptz` | 空でもよい（完了したときだけ入る） |
 | `created_at` | `timestamptz` | NOT NULL、`DEFAULT now()` |
 
+- 部分ユニークインデックス：`CREATE UNIQUE INDEX ai_proposals_one_completed_per_insight ON ai_proposals (insight_id) WHERE status = 'completed'`。1つの気づきに完了したAI提案は1件まで（要件定義書 5.5「保存するAI提案の数」、notes.md 2章）。新しいAI提案が完了するときは、前の完了したものを同じトランザクションで先に消すので、ふだんは引っかからない。消し忘れの不具合があったときに、データベースが2件目を断る最後の守り。完了していない行は対象外なので、同じ気づきに何個あってもよい。
 - 一意制約：`UNIQUE (user_id, idempotency_key)`。同じ人の同じ受付番号は1つだけ。ほぼ同時に2つ届いて確かめをすり抜けた場合は、2つ目が制約違反になるので、既にあるものとして返す（api.md 2-4）。
 - 状態の値はデータベースでは6つ。API の `plan_failed`（送り直し待ち）は、データベースでは `awaiting_answer` で `answer` が入っているもので表す（api.md 2-3・7-6）。
 - 外部キーの列は相手の主キーと同じ `uuid` にする（型が違うと外部キーを作れない）。受付番号は画面が UUID で作るので `uuid`。
@@ -210,13 +211,14 @@ WHERE kind = 'login' AND subject = '203.0.113.5'
 - `users (email)`（一意）
 - `books (user_id, google_volume_id)`（一意）
 - `ai_proposals (user_id, idempotency_key)`（一意）
+- `ai_proposals (insight_id) WHERE status = 'completed'`（部分ユニークインデックス。3-4）
 - `ai_usages (user_id, usage_date)`・`app_ai_usages (usage_date)`（主キー）
 
 ### 4-2. 自分で作るもの
 
 | # | 場面 | インデックス | 理由 |
 | --- | --- | --- | --- |
-| 1 | 本棚の一覧（api.md 7-3） | `books (user_id, created_at, id)` | 自分の本で絞り、登録日時で並べる。最後の `id` で同じ日時の順番も決まり、カーソル（日時＋ID）にそのまま使える |
+| 1 | 本棚の一覧（api.md 7-3） | `books (user_id, created_at, id)` | 自分の本で絞り、登録日時で並べる。最後の `id` で同じ日時の順番も決まり、カーソル（日時＋ID）にそのまま使える。読書ステータスは入れない（入れると「すべて」のときに日時の順に並ばなくなる。1人の本は多くても数百冊なので、「読書中だけ」は自分の本を読みながら飛ばしても十分速い） |
 | 2 | 本ごとの気づき一覧（api.md 7-4） | `insights (user_id, original_book_id, created_at, id)` | 自分の・この元の本の気づきで絞り、書いた日時で並べる。気づき一覧（元の本ごとにまとめて数える）にも使える |
 | 3 | 本の削除（`ON DELETE SET NULL`） | `insights (book_id)` | 外部キーには自動で作られない。ないと、本を1冊消すたびに気づきを全部見て探す |
 | 4 | 気づきの詳細・削除・AI提案の開始（api.md 7-5・7-6） | `ai_proposals (insight_id)` | この気づきのAI提案を探す。気づきを消したとき一緒に消すAI提案を探すのにも使われる（外部キー） |
