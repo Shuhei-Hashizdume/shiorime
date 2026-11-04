@@ -26,7 +26,7 @@
 - データベース：PostgreSQL 18（主キーは `uuidv7()`）
 - 画面：React 19、Vite、Node.js 24（24.22.1 以上。開発とビルドのときだけ使う）
 - AI：OpenAI（Structured Outputs）。本の検索：Google Books API
-- 構成：Docker Compose で Caddy・FastAPI・worker（後片付け）・PostgreSQL の4コンテナ。本番は AWS EC2
+- 構成：Docker Compose で Caddy・FastAPI・worker（後片付け）・PostgreSQL の4コンテナ（ほかに、起動のときだけマイグレーションを当てる migrate）。本番は AWS EC2
 
 ## 作る順番と進め方
 
