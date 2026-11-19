@@ -13,6 +13,9 @@ class Settings(BaseSettings):
     # JWT の署名の鍵。短いと総当たりで当てられるため、32文字以上だけ受け付ける。
     jwt_secret_key: SecretStr = Field(min_length=32)
 
+    # Google Books の API キー（api.md 4-2）。なければ起動を止める
+    google_books_api_key: SecretStr = Field(min_length=1)
+
     @property
     def database_url(self) -> URL:
         return URL.create(

@@ -10,20 +10,30 @@ type SheetProps = {
   title: string;
   onClose: () => void;
   children: ReactNode;
+  /** full：ほぼ全画面（利用規約など）／auto：中身の高さ（確認・メニュー・短い入力） */
+  variant?: "full" | "auto";
+  /** false なら見出しと「×」を出さない（メニューなど。見出しは読み上げ用にだけ残す） */
+  showHeader?: boolean;
 };
 
-const FOCUSABLE = 'a[href], button:not([disabled]), input:not([disabled]), textarea, select, [tabindex]:not([tabindex="-1"])';
+const FOCUSABLE =
+  'a[href], button:not([disabled]), input:not([disabled]), textarea:not([disabled]), select, [tabindex]:not([tabindex="-1"])';
 
-export function Sheet({ title, onClose, children }: SheetProps) {
+export function Sheet({ title, onClose, children, variant = "full", showHeader = true }: SheetProps) {
   const titleId = useId();
   const sheetRef = useRef<HTMLDivElement>(null);
-  const closeRef = useRef<HTMLButtonElement>(null);
+  const onCloseRef = useRef(onClose);
+  onCloseRef.current = onClose;
 
   useEffect(() => {
     const opener = document.activeElement as HTMLElement | null;
     const { overflow } = document.body.style;
     document.body.style.overflow = "hidden";
-    closeRef.current?.focus({ preventScroll: true });
+    // 自動でカーソルを入れたい欄（data-autofocus）があればそこへ、なければ最初の押せる部品へ
+    const target =
+      sheetRef.current?.querySelector<HTMLElement>("[data-autofocus]") ??
+      sheetRef.current?.querySelector<HTMLElement>(FOCUSABLE);
+    target?.focus({ preventScroll: true });
 
     return () => {
       document.body.style.overflow = overflow;
@@ -34,7 +44,7 @@ export function Sheet({ title, onClose, children }: SheetProps) {
   function handleKeyDown(event: KeyboardEvent) {
     if (event.key === "Escape") {
       event.stopPropagation();
-      onClose();
+      onCloseRef.current();
       return;
     }
     if (event.key !== "Tab" || !sheetRef.current) return;
@@ -55,25 +65,31 @@ export function Sheet({ title, onClose, children }: SheetProps) {
     <div
       className="sheet-backdrop"
       onMouseDown={(event) => {
-        if (event.target === event.currentTarget) onClose();
+        if (event.target === event.currentTarget) onCloseRef.current();
       }}
     >
       <div
         ref={sheetRef}
-        className="sheet"
+        className={`sheet sheet-${variant}`}
         role="dialog"
         aria-modal="true"
         aria-labelledby={titleId}
         onKeyDown={handleKeyDown}
       >
-        <div className="sheet-header">
-          <h2 className="sheet-title" id={titleId}>
+        {showHeader ? (
+          <div className="sheet-header">
+            <h2 className="sheet-title" id={titleId}>
+              {title}
+            </h2>
+            <button type="button" className="icon-button" aria-label="閉じる" onClick={() => onCloseRef.current()}>
+              <X size={24} aria-hidden="true" />
+            </button>
+          </div>
+        ) : (
+          <h2 className="visually-hidden" id={titleId}>
             {title}
           </h2>
-          <button ref={closeRef} type="button" className="icon-button" aria-label="閉じる" onClick={onClose}>
-            <X size={24} aria-hidden="true" />
-          </button>
-        </div>
+        )}
         <div className="sheet-body">{children}</div>
       </div>
     </div>,
