@@ -1,20 +1,47 @@
-import { useEffect, useState } from "react";
+import { Navigate, Route, Routes } from "react-router";
 
-// 土台の確認用の空の画面。API（GET /api/v1/health）につながるかだけを表示する。
+import { GuestOnly, RequireAuth } from "./auth/guards";
+import Login from "./pages/Login";
+import Register from "./pages/Register";
+import ShelfPlaceholder from "./pages/ShelfPlaceholder";
+import Welcome from "./pages/Welcome";
+
 export default function App() {
-  const [status, setStatus] = useState("確認中…");
-
-  useEffect(() => {
-    fetch("/api/v1/health")
-      .then((res) => (res.ok ? res.json() : Promise.reject(res.status)))
-      .then((data: { status: string }) => setStatus(data.status))
-      .catch(() => setStatus("つながりません"));
-  }, []);
-
   return (
-    <main>
-      <h1>SHIORIME</h1>
-      <p>API: {status}</p>
-    </main>
+    <Routes>
+      <Route
+        path="/"
+        element={
+          <RequireAuth>
+            <ShelfPlaceholder />
+          </RequireAuth>
+        }
+      />
+      <Route
+        path="/welcome"
+        element={
+          <GuestOnly>
+            <Welcome />
+          </GuestOnly>
+        }
+      />
+      <Route
+        path="/login"
+        element={
+          <GuestOnly>
+            <Login />
+          </GuestOnly>
+        }
+      />
+      <Route
+        path="/register"
+        element={
+          <GuestOnly>
+            <Register />
+          </GuestOnly>
+        }
+      />
+      <Route path="*" element={<Navigate to="/" replace />} />
+    </Routes>
   );
 }
