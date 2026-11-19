@@ -14,11 +14,7 @@ export default function Welcome() {
     <main className="page welcome">
       <LogoVertical />
 
-      <h1 className="catch">
-        今夜の栞を、
-        <br />
-        明日の芽に。
-      </h1>
+      <h1 className="catch">今夜の栞を、明日の芽に。</h1>
       <p className="welcome-sub">
         心に残った気づきを書き留めると、
         <br />
