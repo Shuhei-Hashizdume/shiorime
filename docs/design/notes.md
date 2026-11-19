@@ -138,6 +138,9 @@
 ## 5. インフラ
 
 - Docker Compose で Caddy ＋ FastAPI ＋ 片付け（worker）＋ PostgreSQL の4コンテナ構成（片付けのコンテナは api.md 2-8 で追加）。ローカルでも本番と同じ構成で開発し、完成後に EC2 へデプロイする。
+- 起動のときだけ動く使い切りのコンテナ `migrate` を足す。api と同じイメージで `alembic upgrade head` を動かし、終わったら止まる。常に動くのは4つのコンテナのまま。
+  - 起動の順番：db の準備ができる（ヘルスチェック）→ migrate がマイグレーションを当てる → 成功したら api と worker が起動する。失敗したら api と worker は起動しない。
+  - 理由：テーブルの形を変えるのを migrate の1か所だけにするため。api の起動に入れると、同じイメージの worker も動かして同時に当てようとしたり、開発中に api の命令を `--reload` に差し替えたときに書き忘れたりするため。FastAPI を2つ以上に増やしても、当てるのは1回だけで済む。
 - Caddy をリバースプロキシにし、画面とAPIを同じドメインから配信する（例：`/` は画面、`/api` は FastAPI）。
 - 独自ドメインを取得し、Caddy の自動 HTTPS を使う。
 - PostgreSQL のポートは外部に公開しない。
@@ -150,7 +153,57 @@
 - 開発中は、画面を Vite の開発用サーバー（`localhost:5173`）で動かし、`/api/` で始まる頼みを Vite から FastAPI（`localhost:8000`）へ中継する。理由：ポート番号が違うとブラウザは別のサイトとして扱い、Cookie が送られないなど本番と違う動きになるため。中継すれば、ブラウザからは画面も API も同じ `localhost:5173` に見え、本番と同じ「同じドメイン」の形になる。画面を直すとすぐ反映される。
 - 区切り（プルリクエストの前など）には、本番と同じく「ビルドしたファイルを Caddy が配り、`/api/` を FastAPI に回す」形でも確かめる。
 - Cookie の Secure（HTTPS のときだけ送る）は開発中も外さない。ブラウザは `localhost` を安全な場所として扱うので、`http://localhost` でも動く。
+- FastAPI と worker は開発中も Docker のコンテナで動かす。`backend/` をコンテナにつなぎ（バインドマウント）、FastAPI は `--reload` で起動して、保存したらすぐ反映させる。
+- 開発中だけの設定（フォルダをつなぐ・`--reload`・8000 番を `127.0.0.1` に開ける）は `compose.override.yml` に分け、本番と共通の形は `docker-compose.yml` に置く。本番は `docker-compose.yml` だけで起動する。
+- 本番ではコンテナの中を書き換えず、イメージを作り直して入れ替える。
 - Node.js は開発とビルドのときだけ使う。本番用の Caddy のコンテナは、Docker のマルチステージビルドで「Node.js でビルドし、できたファイルだけを移す」形にし、Node.js を入れない。
+
+#### フォルダの分け方
+
+```
+book-app/
+├── docker-compose.yml   4つのコンテナをまとめて起動する
+├── .env                 秘密の値（Git に入れない）
+├── .env.example         名前とダミーの値だけ（Git に入れる）
+├── caddy/               Caddy の設定ファイル
+├── backend/             Python（FastAPI と worker が同じコードを使う）
+├── frontend/            React＋Vite
+└── docs/                設計の文書
+```
+
+- 画面とバックエンドは、使う言語・道具・部品がまったく別なので分ける。
+- worker は `backend/` に入れる。片付けの関数とテーブルの定義を FastAPI と共有し、同じイメージを起動の命令だけ変えて使うため（api.md 2-8）。
+- `docker-compose.yml` と `.env` は一番上に置く。Compose は `backend/` と `frontend/` の両方を使い、`.env` は PostgreSQL のコンテナも読むため。
+
+`backend/` の中は、役割ごとに分ける。
+
+```
+backend/
+├── pyproject.toml / uv.lock     部品の一覧（uv）
+├── Dockerfile                   FastAPI と worker の共通のイメージ
+├── alembic/                     マイグレーション
+├── app/
+│   ├── main.py                  FastAPI の起動。routers をまとめてつなぐ
+│   ├── routers/                 受け口（URL ごと）。HTTP の受け渡しだけをし、services を呼ぶ
+│   ├── schemas/                 入力・出力の形（Pydantic）
+│   ├── services/                アプリの決まりごと（ビジネスロジック）とデータベースの読み書き
+│   ├── models/                  テーブルの定義（SQLAlchemy）
+│   ├── core/                    どの機能でも使うもの（設定・エラーの形・文字数を数える・ログ）
+│   ├── db.py                    データベースへのつなぎ方
+│   └── jobs/cleanup.py          worker（5分おきに services の片付けを呼ぶ）
+└── tests/                       pytest
+```
+
+- 各フォルダの中は、機能ごとのファイルに分ける（例：`routers/books.py`・`services/books.py`）。
+- アプリの決まりごとは routers に直接書かず、services に置く。止まった AI提案の片付けを、API（その場の判定）と worker（定期の片付け）の両方から同じ関数で呼ぶため（api.md 2-8）。「自分のものか」の確認も services で行い、どこから呼んでも同じ確認が通るようにする。
+- データベースの読み書きだけを集めた層（repositories）は作らない。今の規模ではファイルが増えるだけのため。必要になったら services から分ける。
+- 理由：機能が5つの規模では役割ごとに分ける形が分かりやすく、FastAPI の公式の見本とも同じ形のため。機能が大きく増えたら、機能ごとのフォルダに組み替えることもできる。
+
+#### データベースとのやりとり
+
+- 同期で書く（SQLAlchemy の同期の書き方、ドライバは psycopg）。
+- 理由：時間がかかるのは OpenAI の呼び出しで、これは受け付けたらすぐ返して裏で進める設計にしている（api.md 2章）。データベースの処理は短く、FastAPI は同期の関数をスレッドプールで並べて動かすので、ほかの利用者を待たせない。非同期は `async`/`await` の付け忘れや、関係するデータを後から読む機能が使えないなどの間違えやすさが増える。
+- AI の返事を文字が流れるように画面に出す（ストリーミング）場合や、同時の接続が大きく増えた場合は、非同期への切り替えを考える。
 
 #### 使う道具の版
 
@@ -165,7 +218,10 @@
 
 #### 依存する部品の安全（サプライチェーン攻撃への対策）
 
-- 部品の版を固定する：`package-lock.json` を Git に入れ、`npm ci` で入れる。Python 側もロックファイルで版を固定する。
+- 部品の版を固定する：`package-lock.json` を Git に入れ、`npm ci` で入れる。Python 側は uv を使い、`pyproject.toml`（自分で選んだ部品）と `uv.lock`（裏の部品まで含めた全部の版とハッシュ）を Git に入れ、`uv sync --locked` で入れる。
+  - uv を選んだ理由：pip ＋ `requirements.txt` だけでは、裏の部品の版が固定されず、ハッシュでの中身の確認も手作業になり、開発中だけ使う部品（pytest など）も分けにくいため。uv はこの3つをまとめて行い、npm の `package-lock.json`＋`npm ci` と同じ考え方で扱える。
+  - 開発中だけ使う部品は `uv add --dev` で入れ、本番のイメージには `--no-dev` で入れない。
+  - Python の部品は、`pyproject.toml` の `[tool.uv]` に `exclude-newer = "7 days"` を書き、出てから7日たっていない版を自動で避ける（「出たばかりの版にはすぐ上げない」を道具で守るため。乗っ取られた版はたいてい数日で見つかって消されるので、それより少し長く待つ）。弱点を直した急ぎの版は、部品ごとに `exclude-newer-package` で例外にする。
 - npm の部品を入れるときの自動の命令（ライフサイクルスクリプト）を止める（`ignore-scripts=true`）。
 - 部品を増やしすぎない。出たばかりの版にはすぐ上げない。
 - GitHub の Dependabot で、弱点のある部品を知らせてもらう。
@@ -187,6 +243,16 @@
 - ログはコンテナの標準の出力に出し、Docker に任せる（決まった大きさで古いものから消す設定にする）。EC2 が1台のうちは `docker logs` で見て、必要になったら CloudWatch Logs などに集める。
 - AI の利用上限額・API キーの誤りは ERROR（api.md 2-6）。
 - ログを見られるのは作る側だけで、利用者には見せない（画面の文とは別物）。
+
+#### 土台を作るときに決めたこと（2026-11-19）
+
+- 設定：`backend/app/core/config.py` の `Settings`（pydantic-settings）で環境変数を読み、ファイルの最後で1回だけ `settings = Settings()` を作ってみんなで使う。読めない値があれば、起動の時点でエラーで止まる。接続先は5つの値（`POSTGRES_*`）から `settings.database_url` で組み立て、`.env` に接続文字列を別に書かない（値のもとを1か所にするため）。組み立てには SQLAlchemy の `URL.create()` を使う（パスワードの記号を正しく扱い、表示のときはパスワードが `***` に隠れるため）。
+- データベースへのつなぎ方：`app/db.py` に接続（engine）を1つ作り、API の処理ごとに `get_db()` でセッションを渡す。テストでは `get_db()` を差し替えて、テスト用のデータベースにつなぐ。
+- 制約とインデックスの名前は、`app/models/base.py` の決まり（naming convention）で自動で付ける。名前が決まっていないと、あとで制約を消す・付け直すマイグレーションが書けないため。
+- Alembic の接続先は `alembic.ini` に書かず、`alembic/env.py` で `app/db.py` の接続を使う（接続先の情報を1か所にするため）。開発中は `backend/alembic/` をコンテナにつなぎ、api のコンテナで作った手順のファイルが手元に残るようにする。
+- Caddy が受け付けるアドレスは `.env` の `SITE_ADDRESS` で決める。空なら `:80`（手元で `http://localhost` を配る）、本番は独自ドメインを書いて自動の HTTPS にする。
+- 画面は TypeScript で書く。理由：画面は AI が書いて人がレビューするため、API の形（api.md）と画面の扱う形のずれを、動かす前に道具で見つけられるようにする。
+- Node.js の版は `frontend/.node-version` に書き、nodenv がそれを使う。`package.json` の `engines` と `.npmrc` の `engine-strict=true` で、違う版では部品を入れられないようにする。
 
 #### バックアップ
 

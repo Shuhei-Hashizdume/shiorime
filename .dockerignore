@@ -1,0 +1,9 @@
+# caddy のイメージを作るとき（場所はリポジトリ全体）に送らないもの
+.git
+.env
+.env.*
+docs
+backend
+**/node_modules
+**/dist
+**/.DS_Store
