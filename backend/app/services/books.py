@@ -239,10 +239,10 @@ def search_catalog(
 ) -> tuple[list[CatalogItem], int | None]:
     rate_limit.reserve(db, rate_limit.SEARCH, str(user_id))
 
-    # 続きがあるかを知るために1件多く頼む
-    found = google_books.search(q, offset, SEARCH_PAGE_SIZE + 1)
-    has_more = len(found) > SEARCH_PAGE_SIZE
-    found = found[:SEARCH_PAGE_SIZE]
+    # Google Books は1回に20件までしか返さないので、20件ちょうど返ってきたら続きがあるとみなす。
+    # 結果が20の倍数で終わるときだけ、続きを頼むと0件になる（そのときは next_offset が null になる）
+    found = google_books.search(q, offset, SEARCH_PAGE_SIZE)[:SEARCH_PAGE_SIZE]
+    has_more = len(found) == SEARCH_PAGE_SIZE
 
     # 20冊分を1回でまとめて聞く（1冊ずつ聞くと N＋1 になる）
     volume_ids = [b.google_volume_id for b in found]

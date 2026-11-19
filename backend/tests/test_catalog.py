@@ -40,8 +40,8 @@ def test_search_marks_books_on_my_shelf(user_client: TestClient, google_books: F
         "info_link",
         "shelf_book_id",
     }
-    # 前後の空白を除いて頼み、続きがあるかを知るために21件頼む
-    assert google_books.search_calls == [("勇気", 0, 21)]
+    # 前後の空白を除いて、20件を頼む
+    assert google_books.search_calls == [("勇気", 0, 20)]
 
 
 def test_search_does_not_mark_other_users_books(
@@ -65,6 +65,19 @@ def test_search_next_offset(user_client: TestClient, google_books: FakeGoogleBoo
     second = user_client.get(SEARCH, params={"q": "本", "offset": 20}).json()
     assert len(second["items"]) == 5
     assert second["next_offset"] is None
+
+
+def test_search_exactly_20_results_offers_more_then_ends(
+    user_client: TestClient, google_books: FakeGoogleBooks
+) -> None:
+    google_books.add(*[catalog_book(f"v{i}") for i in range(20)])
+
+    first = user_client.get(SEARCH, params={"q": "本"}).json()
+    assert first["next_offset"] == 20
+
+    # 続きを頼むと0件。何も足さずに続きなしにする
+    second = user_client.get(SEARCH, params={"q": "本", "offset": 20}).json()
+    assert second == {"items": [], "next_offset": None}
 
 
 def test_search_validation(user_client: TestClient, google_books: FakeGoogleBooks) -> None:
