@@ -49,7 +49,7 @@ SHIORIME のテーブル・列・制約・インデックスを決める文書�
 
 - `text` の列に CHECK 制約を付けて持つ（例：`status text NOT NULL CHECK (status IN ('reading', 'finished'))`）。PostgreSQL の ENUM 型は使わない。
 - 理由：入れるときの守りは ENUM と同じだが、値を足す・消す・名前を変えるのが CHECK の付け直しだけで済むため。ENUM は値を消す・名前を変えるのに型の作り直しと全部の行の移し替えが要る。SHIORIME は AI提案の状態を増やしたように値が変わりやすい。
-- Python 側は StrEnum で値を決め、SQLAlchemy では `Enum(…, native_enum=False)` で文字の列＋CHECK にする。
+- Python 側は StrEnum で値を決め、SQLAlchemy では `text` の列と、StrEnum の値から作った `CheckConstraint` にする（2026-11-19 変更。`Enum(…, native_enum=False)` は列が `varchar(n)` になり、2-3 の「文字の列は `text`」と食い違うため）。
 
 ## 3. テーブルごとの列
 
