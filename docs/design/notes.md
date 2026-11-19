@@ -244,6 +244,16 @@ backend/
 - AI の利用上限額・API キーの誤りは ERROR（api.md 2-6）。
 - ログを見られるのは作る側だけで、利用者には見せない（画面の文とは別物）。
 
+#### 土台を作るときに決めたこと（2026-11-19）
+
+- 設定：`backend/app/core/config.py` の `Settings`（pydantic-settings）で環境変数を読み、ファイルの最後で1回だけ `settings = Settings()` を作ってみんなで使う。読めない値があれば、起動の時点でエラーで止まる。接続先は5つの値（`POSTGRES_*`）から `settings.database_url` で組み立て、`.env` に接続文字列を別に書かない（値のもとを1か所にするため）。組み立てには SQLAlchemy の `URL.create()` を使う（パスワードの記号を正しく扱い、表示のときはパスワードが `***` に隠れるため）。
+- データベースへのつなぎ方：`app/db.py` に接続（engine）を1つ作り、API の処理ごとに `get_db()` でセッションを渡す。テストでは `get_db()` を差し替えて、テスト用のデータベースにつなぐ。
+- 制約とインデックスの名前は、`app/models/base.py` の決まり（naming convention）で自動で付ける。名前が決まっていないと、あとで制約を消す・付け直すマイグレーションが書けないため。
+- Alembic の接続先は `alembic.ini` に書かず、`alembic/env.py` で `app/db.py` の接続を使う（接続先の情報を1か所にするため）。開発中は `backend/alembic/` をコンテナにつなぎ、api のコンテナで作った手順のファイルが手元に残るようにする。
+- Caddy が受け付けるアドレスは `.env` の `SITE_ADDRESS` で決める。空なら `:80`（手元で `http://localhost` を配る）、本番は独自ドメインを書いて自動の HTTPS にする。
+- 画面は TypeScript で書く。理由：画面は AI が書いて人がレビューするため、API の形（api.md）と画面の扱う形のずれを、動かす前に道具で見つけられるようにする。
+- Node.js の版は `frontend/.node-version` に書き、nodenv がそれを使う。`package.json` の `engines` と `.npmrc` の `engine-strict=true` で、違う版では部品を入れられないようにする。
+
 #### バックアップ
 
 - 本番（EC2）に出すときに決める。
