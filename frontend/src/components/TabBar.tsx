@@ -57,7 +57,8 @@ function MeIcon({ on }: { on: boolean }) {
 }
 
 function currentTab(pathname: string): Tab {
-  if (pathname.startsWith("/insights")) return "insights";
+  if (pathname.startsWith("/insights") || pathname.startsWith("/insight-groups") || pathname.startsWith("/ai-proposals"))
+    return "insights";
   if (pathname.startsWith("/profile")) return "profile";
   return "shelf";
 }
