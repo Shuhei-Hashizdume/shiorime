@@ -5,6 +5,7 @@ services:
     volumes:
       - ./backend/app:/app/app
       - ./backend/tests:/app/tests
+      - ./backend/alembic:/app/alembic
     command:
       [
         "uvicorn",
@@ -15,3 +16,12 @@ services:
         "8000",
         "--reload",
       ]
+
+  worker:
+    volumes:
+      - ./backend/app:/app/app
+
+  migrate:
+    volumes:
+      - ./backend/app:/app/app
+      - ./backend/alembic:/app/alembic

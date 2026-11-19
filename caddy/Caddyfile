@@ -1,0 +1,16 @@
+{$SITE_ADDRESS} {
+	encode zstd gzip
+
+	# /api/ で始まる頼みは FastAPI へ回す
+	handle /api/* {
+		reverse_proxy api:8000
+	}
+
+	# それ以外は、ビルドした画面のファイルを配る。
+	# 見つからない URL（/books/… など）は index.html を返し、React が画面を決める。
+	handle {
+		root * /srv
+		try_files {path} /index.html
+		file_server
+	}
+}
