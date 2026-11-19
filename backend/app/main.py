@@ -1,7 +1,12 @@
 from fastapi import FastAPI
 
-from app.routers import health
+from app.core.errors import register_error_handlers
+from app.routers import auth, health, me
 
 app = FastAPI(title="SHIORIME API")
 
+register_error_handlers(app)
+
 app.include_router(health.router, prefix="/api/v1")
+app.include_router(auth.router, prefix="/api/v1")
+app.include_router(me.router, prefix="/api/v1")

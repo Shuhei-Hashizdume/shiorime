@@ -3,6 +3,7 @@ x-backend-env: &backend-env
   POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
   POSTGRES_DB: ${POSTGRES_DB}
   POSTGRES_HOST: db
+  JWT_SECRET_KEY: ${JWT_SECRET_KEY}
 
 services:
   caddy:

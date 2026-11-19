@@ -3,6 +3,10 @@
 
 	# /api/ で始まる頼みは FastAPI へ回す
 	handle /api/* {
+		# 巨大なデータを入口で止める（api.md 5-1）
+		request_body {
+			max_size 1MB
+		}
 		reverse_proxy api:8000
 	}
 
