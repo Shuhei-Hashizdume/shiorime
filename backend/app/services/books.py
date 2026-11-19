@@ -1,8 +1,5 @@
 """本棚（api.md 7-3）。どの処理も、まず「自分の本か」で絞る（他人の本は 404）。"""
 
-import base64
-import binascii
-import json
 import uuid
 from dataclasses import dataclass
 from datetime import datetime
@@ -11,6 +8,7 @@ from sqlalchemy import Select, delete, func, select, tuple_, update
 from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.orm import Session
 
+from app.core.cursor import decode_cursor, encode_cursor, invalid_cursor
 from app.core.errors import AppError
 from app.models import Book, Insight, ReadingStatus
 from app.schemas.book import BookDetail, CatalogItem
@@ -28,23 +26,16 @@ def book_not_found() -> AppError:
 # ---- 一覧（カーソルで続きを読む。api.md 1-5） ----
 
 
-def encode_cursor(created_at: datetime, book_id: uuid.UUID) -> str:
-    raw = json.dumps({"c": created_at.isoformat(), "i": str(book_id)}).encode()
-    return base64.urlsafe_b64encode(raw).decode().rstrip("=")
+def _encode_book_cursor(created_at: datetime, book_id: uuid.UUID) -> str:
+    return encode_cursor({"c": created_at.isoformat(), "i": str(book_id)})
 
 
-def decode_cursor(cursor: str) -> tuple[datetime, uuid.UUID]:
+def _decode_book_cursor(cursor: str) -> tuple[datetime, uuid.UUID]:
+    data = decode_cursor(cursor)
     try:
-        raw = base64.urlsafe_b64decode(cursor + "=" * (-len(cursor) % 4))
-        data = json.loads(raw)
         return datetime.fromisoformat(data["c"]), uuid.UUID(data["i"])
-    except (binascii.Error, ValueError, KeyError, TypeError):
-        raise AppError(
-            422,
-            "VALIDATION_ERROR",
-            "cursor が正しくありません",
-            fields=[{"field": "cursor", "reason": "invalid_format"}],
-        ) from None
+    except (ValueError, KeyError, TypeError):
+        raise invalid_cursor() from None
 
 
 @dataclass
@@ -66,7 +57,7 @@ def list_books(
 
     query: Select[tuple[Book]] = select(Book).where(*conditions)
     if cursor is not None:
-        created_at, book_id = decode_cursor(cursor)
+        created_at, book_id = _decode_book_cursor(cursor)
         query = query.where(tuple_(Book.created_at, Book.id) < tuple_(created_at, book_id))
     # 続きがあるかを知るために1冊多く取る
     rows = list(db.scalars(query.order_by(Book.created_at.desc(), Book.id.desc()).limit(PAGE_SIZE + 1)))
@@ -74,7 +65,7 @@ def list_books(
     next_cursor = None
     if len(rows) > PAGE_SIZE:
         rows = rows[:PAGE_SIZE]
-        next_cursor = encode_cursor(rows[-1].created_at, rows[-1].id)
+        next_cursor = _encode_book_cursor(rows[-1].created_at, rows[-1].id)
     return BookPage(items=rows, total=total, next_cursor=next_cursor)
 
 
