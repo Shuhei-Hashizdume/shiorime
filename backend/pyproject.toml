@@ -4,9 +4,13 @@ version = "0.1.0"
 requires-python = ">=3.14,<3.15"
 dependencies = [
     "alembic>=1.20",
+    "email-validator>=2.3.0",
     "fastapi>=0.153",
     "psycopg[binary]>=3.3.6",
+    "pwdlib[argon2]>=0.3.1",
     "pydantic-settings>=2.16.1",
+    "pyjwt>=2.15.1",
+    "regex>=2026.11.9",
     "sqlalchemy>=2.1",
     "uvicorn>=0.54.0",
 ]
@@ -22,3 +26,8 @@ exclude-newer = "7 days"
 
 [tool.ruff]
 src = ["."]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+# コンテナの中の /app には書き込めないので、pytest の一時保存を使わない
+addopts = "-p no:cacheprovider"

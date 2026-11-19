@@ -1,4 +1,7 @@
-from sqlalchemy import MetaData
+import uuid
+from datetime import datetime
+
+from sqlalchemy import DateTime, MetaData, Text, Uuid
 from sqlalchemy.orm import DeclarativeBase
 
 # 制約とインデックスの名前の付け方をそろえる。
@@ -14,3 +17,11 @@ NAMING_CONVENTION = {
 
 class Base(DeclarativeBase):
     metadata = MetaData(naming_convention=NAMING_CONVENTION)
+
+    # Python の型 → データベースの型（database.md 2章）
+    # 文字は text、日時は timestamptz、ID は uuid
+    type_annotation_map = {
+        str: Text(),
+        datetime: DateTime(timezone=True),
+        uuid.UUID: Uuid(),
+    }

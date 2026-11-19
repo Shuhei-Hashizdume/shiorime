@@ -1,5 +1,9 @@
 services:
   api:
+    build:
+      context: ./backend
+      args:
+        INSTALL_DEV: "true"
     ports:
       - "127.0.0.1:8000:8000"
     volumes:
