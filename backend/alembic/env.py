@@ -7,7 +7,8 @@ from app.models import Base
 
 config = context.config
 
-if config.config_file_name is not None:
+# テストから呼ぶときは、ログの設定を書き換えない
+if config.config_file_name is not None and config.attributes.get("configure_logger", True):
     fileConfig(config.config_file_name)
 
 target_metadata = Base.metadata
