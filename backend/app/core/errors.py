@@ -27,6 +27,7 @@ class AppError(Exception):
         message: str,
         *,
         details: dict[str, Any] | None = None,
+        fields: list[dict[str, Any]] | None = None,
         headers: dict[str, str] | None = None,
         clear_auth_cookie: bool = False,
     ) -> None:
@@ -35,6 +36,7 @@ class AppError(Exception):
         self.code = code
         self.message = message
         self.details = details
+        self.fields = fields
         self.headers = headers
         # TOKEN_EXPIRED などで、ログインの Cookie を同時に消すとき（api.md 3-3）
         self.clear_auth_cookie = clear_auth_cookie
@@ -67,6 +69,10 @@ PYDANTIC_TYPE_TO_REASON = {
     "json_invalid": "invalid_format",
     "uuid_parsing": "invalid_format",
     "uuid_type": "invalid_format",
+    "string_pattern_mismatch": "invalid_format",
+    "int_parsing": "invalid_format",
+    "greater_than_equal": "out_of_range",
+    "less_than_equal": "out_of_range",
 }
 
 
@@ -93,7 +99,7 @@ def to_field_error(error: dict[str, Any]) -> dict[str, Any]:
 async def handle_app_error(request: Request, exc: AppError) -> JSONResponse:
     response = JSONResponse(
         status_code=exc.status_code,
-        content=error_body(exc.code, exc.message, details=exc.details),
+        content=error_body(exc.code, exc.message, fields=exc.fields, details=exc.details),
         headers=exc.headers,
     )
     if exc.clear_auth_cookie:

@@ -16,9 +16,14 @@ CODEPOINT_FACTOR = 4
 _GRAPHEME = regex.compile(r"\X")
 
 
+def graphemes(value: str) -> list[str]:
+    """見た目の1文字ずつに分ける。"""
+    return _GRAPHEME.findall(value)
+
+
 def count_chars(value: str) -> int:
     """見た目の文字数（書記素クラスタの数）を返す。例："👨‍👩‍👧" は 1、"が"（か＋゛）は 1。"""
-    return len(_GRAPHEME.findall(value))
+    return len(graphemes(value))
 
 
 def normalize(value: str) -> str:
@@ -26,8 +31,25 @@ def normalize(value: str) -> str:
     return unicodedata.normalize("NFC", value.strip())
 
 
+def truncate(value: str, max_chars: int) -> str:
+    """見た目で max_chars 文字を超えたら、max_chars - 1 文字で切って「…」を付ける（api.md 4-1）。
+
+    絵文字などの途中では切らない。
+    """
+    parts = graphemes(value)
+    if len(parts) <= max_chars:
+        return value
+    return "".join(parts[: max_chars - 1]) + "…"
+
+
 def _check_codepoints(value: str, max_chars: int) -> None:
     if len(value) > max_chars * CODEPOINT_FACTOR:
+        raise PydanticCustomError("too_long", "{limit}文字以内で入力してください", {"limit": max_chars})
+
+
+def _check_length(value: str, max_chars: int) -> None:
+    _check_codepoints(value, max_chars)
+    if count_chars(value) > max_chars:
         raise PydanticCustomError("too_long", "{limit}文字以内で入力してください", {"limit": max_chars})
 
 
@@ -38,9 +60,22 @@ def text_validator(max_chars: int) -> Callable[[str], str]:
         value = normalize(value)
         if value == "":
             raise PydanticCustomError("required", "入力してください")
-        _check_codepoints(value, max_chars)
-        if count_chars(value) > max_chars:
-            raise PydanticCustomError("too_long", "{limit}文字以内で入力してください", {"limit": max_chars})
+        _check_length(value, max_chars)
+        return value
+
+    return validate
+
+
+def optional_text_validator(max_chars: int) -> Callable[[str | None], str | None]:
+    """空でもよい文字の欄（著者・引用など）の確かめ。空・空白だけ・null は None にそろえる（api.md 7-3）。"""
+
+    def validate(value: str | None) -> str | None:
+        if value is None:
+            return None
+        value = normalize(value)
+        if value == "":
+            return None
+        _check_length(value, max_chars)
         return value
 
     return validate

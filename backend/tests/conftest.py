@@ -71,3 +71,46 @@ def client() -> Iterator[TestClient]:
 def db() -> Iterator[Session]:
     with SessionLocal() as session:
         yield session
+
+
+# ---- 本棚のテストで使うもの ----
+
+from app.services.google_books import get_google_books  # noqa: E402
+from tests.fakes import FakeGoogleBooks  # noqa: E402
+
+
+@pytest.fixture
+def google_books() -> Iterator[FakeGoogleBooks]:
+    """Google Books を偽物に置き換える（テストでは本物を呼ばない）。"""
+    fake = FakeGoogleBooks()
+    app.dependency_overrides[get_google_books] = lambda: fake
+    yield fake
+    app.dependency_overrides.pop(get_google_books, None)
+
+
+def _logged_in_client(email: str) -> TestClient:
+    c = TestClient(app, base_url="https://testserver")
+    c.__enter__()
+    response = c.post(
+        "/api/v1/auth/register",
+        json={"email": email, "password": "correct-horse", "attribute": "working", "agreed_to_terms": True},
+        headers={"X-Forwarded-For": f"198.51.100.{abs(hash(email)) % 250}"},
+    )
+    assert response.status_code == 201, response.text
+    return c
+
+
+@pytest.fixture
+def user_client() -> Iterator[TestClient]:
+    """ログイン済みの利用者"""
+    c = _logged_in_client("reader@example.com")
+    yield c
+    c.__exit__(None, None, None)
+
+
+@pytest.fixture
+def other_client() -> Iterator[TestClient]:
+    """別の利用者（他人のデータを見られないかの確認に使う）"""
+    c = _logged_in_client("other@example.com")
+    yield c
+    c.__exit__(None, None, None)

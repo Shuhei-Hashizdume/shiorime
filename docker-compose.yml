@@ -4,6 +4,7 @@ x-backend-env: &backend-env
   POSTGRES_DB: ${POSTGRES_DB}
   POSTGRES_HOST: db
   JWT_SECRET_KEY: ${JWT_SECRET_KEY}
+  GOOGLE_BOOKS_API_KEY: ${GOOGLE_BOOKS_API_KEY}
 
 services:
   caddy:
