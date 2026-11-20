@@ -1,21 +1,29 @@
-// 気づきの詳細（screens.md 6.、api.md 7-5）。
-// AI提案のボタン・本日の残り回数・作成中の表示は、機能4（AI提案）で足す。
+// 気づきの詳細（screens.md 6.、api.md 7-5・2-3・2-4）。
+// AI提案はここから始める。作成中のAI提案があれば2秒ごとに問い合わせ、完了したら次の一歩を入れ替える。
 
 import { ArrowLeft, CaretRight, DotsThreeVertical } from "@phosphor-icons/react";
 import { useCallback, useEffect, useState } from "react";
 import { Link, useLocation, useNavigate, useParams } from "react-router";
 
+import { aiProposalsApi, type AiUsage } from "../api/aiProposals";
 import { ApiError } from "../api/client";
 import { insightsApi, type InsightDetail as Insight } from "../api/insights";
 import { useUnauthorized } from "../auth/useUnauthorized";
 import { BookCover } from "../components/BookCover";
-import { ErrorBanner } from "../components/Feedback";
+import { ErrorBanner, Notice } from "../components/Feedback";
+import { Making } from "../components/Growing";
 import { QuoteIcon } from "../components/QuoteIcon";
 import { Sheet } from "../components/Sheet";
 import { useToast } from "../components/Toast";
 import { formatDay } from "../lib/date";
+import { useProposalPolling, type PollUpdate } from "../lib/useProposalPolling";
 
 type LoadState = { kind: "loading" } | { kind: "ready"; insight: Insight } | { kind: "not_found" } | { kind: "error" };
+
+/** 押して断られたときのお知らせ（api.md 2-4 の表） */
+type StartNotice = { tone: "calm" | "error"; title: string; text: string };
+
+const LOGGING_IS_FREE = "（気づきの登録は何件でもできます）";
 
 export default function InsightDetail() {
   const { insightId = "" } = useParams();
@@ -27,22 +35,89 @@ export default function InsightDetail() {
   const [justCreated] = useState(() => (location.state as { justCreated?: boolean } | null)?.justCreated === true);
 
   const [state, setState] = useState<LoadState>({ kind: "loading" });
-  const [sheet, setSheet] = useState<"menu" | "delete" | null>(null);
+  const [usage, setUsage] = useState<AiUsage | null>(null);
+  const [sheet, setSheet] = useState<"menu" | "delete" | "again" | null>(null);
+  const [starting, setStarting] = useState(false);
+  const [notice, setNotice] = useState<StartNotice | null>(null);
 
-  const load = useCallback(async () => {
-    setState({ kind: "loading" });
+  const loadUsage = useCallback(async () => {
     try {
-      setState({ kind: "ready", insight: await insightsApi.get(insightId) });
+      setUsage(await aiProposalsApi.usage());
     } catch (error) {
-      if (onUnauthorized(error)) return;
-      if (error instanceof ApiError && (error.status === 404 || error.status === 422)) setState({ kind: "not_found" });
-      else setState({ kind: "error" });
+      onUnauthorized(error);
     }
-  }, [insightId, onUnauthorized]);
+  }, [onUnauthorized]);
+
+  /** quiet：スケルトンを出さずに取り直す（完了の反映・断られたあとなど） */
+  const load = useCallback(
+    async (quiet = false) => {
+      if (!quiet) setState({ kind: "loading" });
+      // 残り回数は気づきではなく自分の情報なので、別の API から同時に取る（api.md 7-5）
+      void loadUsage();
+      try {
+        setState({ kind: "ready", insight: await insightsApi.get(insightId) });
+      } catch (error) {
+        if (onUnauthorized(error)) return;
+        if (error instanceof ApiError && (error.status === 404 || error.status === 422)) setState({ kind: "not_found" });
+        else if (!quiet) setState({ kind: "error" });
+      }
+    },
+    [insightId, onUnauthorized, loadUsage],
+  );
 
   useEffect(() => {
     void load();
   }, [load]);
+
+  // 作成中のAI提案があれば、2秒ごとに問い合わせる（api.md 2-3）
+  const pending = state.kind === "ready" ? state.insight.pending_proposal : null;
+  const handlePoll = useCallback(
+    (update: PollUpdate) => {
+      if (update.kind === "proposal" && (update.proposal.status === "generating_question" || update.proposal.status === "generating_plans")) return;
+      if (update.kind === "proposal" && update.proposal.status === "completed") showToast("次の一歩ができました");
+      // 完了・失敗・削除のどれでも、気づきを取り直して今の状態を出す
+      void load(true);
+    },
+    [load, showToast],
+  );
+  useProposalPolling(pending?.status === "processing" ? pending.id : null, handlePoll, onUnauthorized);
+
+  async function startProposal() {
+    if (state.kind !== "ready" || starting) return;
+    setSheet(null);
+    setNotice(null);
+    setStarting(true);
+    // 受付番号。返事が届かなかったら、同じ番号で1回だけ送り直す（回数を二重に使わない。api.md 2-4）
+    const key = crypto.randomUUID();
+    try {
+      let started: { id: string };
+      try {
+        started = await aiProposalsApi.start(state.insight.id, key);
+      } catch (error) {
+        if (!(error instanceof ApiError && error.status === 0)) throw error;
+        started = await aiProposalsApi.start(state.insight.id, key);
+      }
+      navigate(`/ai-proposals/${started.id}`, { state: { fresh: true } });
+    } catch (error) {
+      setStarting(false);
+      if (onUnauthorized(error)) return;
+      const code = error instanceof ApiError ? error.code : "";
+      if (code === "INSIGHT_NOT_FOUND") {
+        setState({ kind: "not_found" });
+        return;
+      }
+      if (code === "AI_DAILY_LIMIT")
+        setNotice({ tone: "calm", title: "AI提案を始められませんでした", text: "本日の回数を使い切っています（ほかの端末で使った分も含みます）。" });
+      else if (code === "AI_APP_LIMIT")
+        setNotice({ tone: "calm", title: "AI提案を始められませんでした", text: "本日はAI提案の受付を終了しました。" });
+      else if (code === "AI_PROPOSAL_IN_PROGRESS")
+        setNotice({ tone: "calm", title: "この気づきのAI提案を処理中です", text: "しばらくお待ちください。" });
+      else
+        setNotice({ tone: "error", title: "AI提案を始められませんでした", text: "通信に失敗しました。時間をおいて、もう一度お試しください。" });
+      // ボタンと残り回数を最新にする（処理中なら、作成中の表示と問い合わせに切り替わる）
+      void load(true);
+    }
+  }
 
   function goBack() {
     const groupUrl = state.kind === "ready" ? `/insight-groups/${state.insight.book.id}` : "/insights";
@@ -126,9 +201,45 @@ export default function InsightDetail() {
                 深掘りと回答も見る
                 <CaretRight size={18} aria-hidden="true" />
               </Link>
+              {pending?.status === "processing" && (
+                <Making title="新しい次の一歩を作成中です…">完了すると、ここに表示されます</Making>
+              )}
             </section>
           )}
+          {!state.insight.latest_proposal && pending?.status === "processing" && (
+            <section className="next-steps" aria-label="次の一歩">
+              <Making title="次の一歩を作成中です…" />
+            </section>
+          )}
+
+          <AiStart
+            insight={state.insight}
+            usage={usage}
+            starting={starting}
+            notice={notice}
+            onStart={() => (state.insight.latest_proposal ? setSheet("again") : void startProposal())}
+          />
         </>
+      )}
+
+      {state.kind === "ready" && sheet === "again" && (
+        <Sheet title="もう一度AI提案を受けますか？" onClose={() => setSheet(null)} variant="auto" showHeader={false}>
+          <div className="confirm">
+            <p className="confirm-title">もう一度AI提案を受けますか？</p>
+            <p className="confirm-text">
+              新しいAI提案が完了すると、今の次の一歩は新しいものに置き換わり、元には戻せません。途中でやめた場合は、今の次の一歩が残ります。
+            </p>
+            <div className="sheet-actions">
+              <button type="button" className="button button-primary" onClick={() => void startProposal()}>
+                AI提案を受ける
+              </button>
+              <button type="button" className="button button-ghost" onClick={() => setSheet(null)}>
+                キャンセル
+              </button>
+            </div>
+            {usage && <p className="rest">本日あと{usage.remaining_today}回（受けると1回使います）</p>}
+          </div>
+        </Sheet>
       )}
 
       {state.kind === "ready" && sheet === "menu" && (
@@ -215,5 +326,73 @@ function DeleteSheet({
         </div>
       </div>
     </Sheet>
+  );
+}
+
+/** AI提案のボタンと残り回数（screens.md 6.「AI提案のボタンと確認」） */
+function AiStart({
+  insight,
+  usage,
+  starting,
+  notice,
+  onStart,
+}: {
+  insight: Insight;
+  usage: AiUsage | null;
+  starting: boolean;
+  notice: StartNotice | null;
+  onStart: () => void;
+}) {
+  const hasPlans = insight.latest_proposal !== null;
+  const pending = insight.pending_proposal;
+  // 押せない理由。処理中 → 本人の回数 → アプリ全体の上限の順に見る
+  const blocked =
+    pending?.status === "processing"
+      ? "processing"
+      : usage && usage.remaining_today <= 0
+        ? "daily"
+        : usage?.app_limit_reached
+          ? "app"
+          : null;
+
+  let rest: string;
+  if (blocked === "processing") rest = "AI提案を処理中です";
+  else if (blocked === "daily") rest = "本日のAI提案は使い切りました。明日0時に回復します。";
+  else if (blocked === "app") rest = "本日はAI提案の受付を終了しました。明日0時に再開します。";
+  else rest = usage ? `本日あと${usage.remaining_today}回` : "";
+
+  return (
+    <section className="ai-start" aria-label="AI提案">
+      {!hasPlans && <p className="ai-explain">AIが気づきを深掘りする質問をし、あなたの回答から次の一歩を一緒に考えます。</p>}
+      {pending?.status === "failed" && !notice && (
+        <Notice tone="error" title="次の一歩を作成できませんでした">
+          使った回数は戻りません。もう一度AI提案を受けられます。
+        </Notice>
+      )}
+      {notice && (
+        <Notice tone={notice.tone} title={notice.title}>
+          {notice.text}
+        </Notice>
+      )}
+      <button
+        type="button"
+        className={`button ${hasPlans ? "button-secondary" : "button-primary"} ai-start-button${blocked ? " is-off" : ""}`}
+        aria-disabled={blocked || starting ? true : undefined}
+        onClick={() => {
+          if (!blocked && !starting) onStart();
+        }}
+      >
+        {starting ? "準備しています…" : hasPlans ? "もう一度AI提案を受ける" : "AI提案を受ける"}
+      </button>
+      <p className="rest">
+        {rest}
+        {blocked !== "processing" && (
+          <>
+            {rest && <br />}
+            {LOGGING_IS_FREE}
+          </>
+        )}
+      </p>
+    </section>
   );
 }

@@ -31,3 +31,20 @@ export function InfoBanner({ children }: { children: ReactNode }) {
     </div>
   );
 }
+
+/**
+ * 見出しと説明のあるお知らせ（api.md 2-4）。
+ * calm：決まりどおりに止まった（回数・上限・処理中）／error：本当に失敗した（夕焼けの枠）
+ */
+export function Notice({ tone, title, children }: { tone: "calm" | "error"; title: string; children: ReactNode }) {
+  const Icon = tone === "error" ? WarningCircle : Info;
+  return (
+    <div className={`notice notice-${tone}`} role={tone === "error" ? "alert" : "status"}>
+      <Icon size={18} aria-hidden="true" />
+      <div>
+        <b className="notice-title">{title}</b>
+        <p>{children}</p>
+      </div>
+    </div>
+  );
+}
