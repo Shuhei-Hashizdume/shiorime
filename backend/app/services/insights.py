@@ -25,6 +25,7 @@ from sqlalchemy.dialects.postgresql import aggregate_order_by, array_agg
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
+from app.core import clock
 from app.core.cursor import decode_cursor, encode_cursor, invalid_cursor
 from app.core.errors import AppError
 from app.models import AiProposal, Book, Insight, ProposalStatus
@@ -39,6 +40,7 @@ from app.schemas.insight import (
     PendingProposal,
     Plan,
 )
+from app.services import ai_proposals
 from app.services.books import book_not_found
 
 GROUP_PAGE_SIZE = 30
@@ -297,6 +299,8 @@ def create_insight(
 
 
 def get_insight(db: Session, user_id: uuid.UUID, insight_id: uuid.UUID) -> InsightDetail:
+    # 止まったAI提案は、その場で片付けてから答える（api.md 2-8）
+    ai_proposals.cleanup(db, clock.now(), user_id=user_id, insight_id=insight_id)
     insight = db.scalars(
         select(Insight).where(Insight.id == insight_id, Insight.user_id == user_id)
     ).one_or_none()

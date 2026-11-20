@@ -7,6 +7,10 @@ import logging
 import signal
 import threading
 
+from app.core import clock
+from app.db import SessionLocal
+from app.services import ai_proposals
+
 logger = logging.getLogger(__name__)
 
 INTERVAL_SECONDS = 5 * 60
@@ -15,8 +19,19 @@ stop_event = threading.Event()
 
 
 def run_cleanup() -> None:
-    # 止まった AI提案の片付けは、機能5で services の関数を呼ぶ形にする。
-    logger.info("cleanup: nothing to do yet")
+    # API のその場の判定と同じ関数を呼ぶ（api.md 2-8）
+    now = clock.now()
+    with SessionLocal() as db:
+        result = ai_proposals.cleanup(db, now)
+        rate_limit_events = ai_proposals.cleanup_rate_limit_events(db, now)
+    logger.info(
+        "cleanup: question_failed=%s plans_reset=%s retry_limit=%s deleted=%s rate_limit_events=%s",
+        result.question_failed,
+        result.plans_reset,
+        result.retry_limit,
+        result.deleted,
+        rate_limit_events,
+    )
 
 
 def handle_stop(signum: int, frame: object) -> None:

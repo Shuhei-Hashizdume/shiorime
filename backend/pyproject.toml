@@ -7,6 +7,7 @@ dependencies = [
     "email-validator>=2.3.0",
     "fastapi>=0.153",
     "httpx>=0.28.1",
+    "openai>=3.49.0",
     "psycopg[binary]>=3.3.6",
     "pwdlib[argon2]>=0.3.1",
     "pydantic-settings>=2.16.1",
