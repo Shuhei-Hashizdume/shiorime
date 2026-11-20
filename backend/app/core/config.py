@@ -1,4 +1,4 @@
-from pydantic import Field, SecretStr
+from pydantic import Field, SecretStr, field_validator
 from pydantic_settings import BaseSettings
 from sqlalchemy import URL
 
@@ -15,6 +15,17 @@ class Settings(BaseSettings):
 
     # Google Books の API キー（api.md 4-2）。なければ起動を止める
     google_books_api_key: SecretStr = Field(min_length=1)
+
+    # OpenAI（api.md 2-7）。使うモデルはコードに書かず、料金を見て .env で切り替える
+    openai_api_key: SecretStr = Field(min_length=1)
+    openai_model: str = Field(min_length=1)
+    # 考える量を指定できるモデル（推論モデル）のときだけ書く（minimal・low など）。空なら送らない
+    openai_reasoning_effort: str | None = None
+
+    @field_validator("openai_reasoning_effort", mode="before")
+    @classmethod
+    def empty_is_none(cls, value: str | None) -> str | None:
+        return value or None
 
     @property
     def database_url(self) -> URL:

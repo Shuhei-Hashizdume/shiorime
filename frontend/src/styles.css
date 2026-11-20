@@ -1392,3 +1392,371 @@ a {
   gap: 6px;
   margin-top: var(--space-m);
 }
+
+/* ======== 機能3：気づき ======== */
+
+.page-title {
+  padding-top: var(--space-m);
+}
+
+.sort-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: var(--space-s) 0 var(--space-s);
+}
+
+.sort-label {
+  font-size: 13px;
+  color: var(--soft);
+}
+
+.sort-option {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-m);
+  min-height: 64px;
+  padding: var(--space-s) 0;
+  border: 0;
+  border-bottom: 1px solid var(--shade);
+  background: none;
+  text-align: left;
+  color: var(--text);
+  cursor: pointer;
+}
+
+.sort-option[aria-checked="true"] {
+  color: var(--lamp-ink);
+}
+
+.sort-option-label {
+  display: block;
+  font-size: 16px;
+}
+
+.sort-option[aria-checked="true"] .sort-option-label {
+  font-weight: 500;
+}
+
+.sort-option-description {
+  display: block;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+/* 気づき一覧のカード */
+.group-list,
+.insight-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 12px;
+}
+
+.group-card {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+  padding: 12px;
+  border-radius: var(--radius-card);
+  background: var(--card);
+  color: var(--text);
+  text-decoration: none;
+}
+
+.group-cover {
+  width: 52px;
+  flex: none;
+}
+
+.group-card.deleted .group-cover {
+  opacity: 0.55;
+}
+
+.group-text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  flex: 1;
+}
+
+.group-title {
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 1.5;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.group-meta {
+  font-size: 13px;
+  color: var(--muted);
+  line-height: 1.6;
+}
+
+.deleted-badge {
+  align-self: flex-start;
+  margin-top: 4px;
+  padding: 1px 10px;
+  border-radius: 999px;
+  border: 1px solid var(--muted);
+  color: var(--muted);
+  font-size: 12px;
+}
+
+/* 本ごとの気づき一覧 */
+.group-head {
+  display: flex;
+  gap: var(--space-m);
+  align-items: flex-start;
+  margin-bottom: var(--space-m);
+}
+
+.group-head-cover {
+  width: 80px;
+  flex: none;
+}
+
+.group-head-cover.faded {
+  opacity: 0.55;
+}
+
+.group-head-title {
+  font-size: 20px;
+  overflow-wrap: anywhere;
+}
+
+.insight-list {
+  margin-top: var(--space-m);
+}
+
+.insight-card {
+  display: block;
+  padding: 14px var(--space-m);
+  border-radius: var(--radius-card);
+  background: var(--card);
+  color: var(--text);
+  text-decoration: none;
+}
+
+.insight-card-meta {
+  display: flex;
+  justify-content: space-between;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.quote-clamp {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.insight-card-body {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  margin-top: var(--space-xs);
+  color: var(--soft);
+  font-size: 15px;
+  overflow-wrap: anywhere;
+}
+
+.next-step-count {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: var(--space-s);
+  font-size: 13px;
+  color: var(--lamp-ink);
+}
+
+.skeleton-card {
+  height: 120px;
+  border-radius: var(--radius-card);
+  margin-top: 12px;
+}
+
+.skeleton-card.tall {
+  height: 220px;
+}
+
+/* 気づきの詳細 */
+.insight-book {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  margin-bottom: var(--space-m);
+}
+
+.insight-book-cover {
+  width: 44px;
+  flex: none;
+}
+
+.insight-book-title {
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+
+.insight-full {
+  position: relative;
+  overflow: hidden;
+  padding-top: var(--space-l);
+}
+
+.insight-full .ribbon {
+  right: 18px;
+}
+
+.insight-full-body {
+  color: var(--soft);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.next-steps {
+  margin-top: var(--space-l);
+  padding: 14px var(--space-m);
+  border-radius: var(--radius-card);
+  background: var(--shade);
+}
+
+.next-steps-title {
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.next-steps-list {
+  margin: var(--space-s) 0 0;
+  padding-left: 1.4em;
+}
+
+.next-steps-list li {
+  margin: 4px 0;
+}
+
+.next-steps .row-link {
+  border-top-color: var(--bg);
+}
+
+/* 気づきの作成・編集 */
+.editor {
+  padding-bottom: var(--space-xl);
+}
+
+.editor-bar {
+  position: sticky;
+  top: 0;
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  height: 60px;
+  margin: 0 calc(var(--space-s) * -1) var(--space-s);
+  background: var(--bg);
+}
+
+.editor-save {
+  width: auto;
+  min-height: 40px;
+  margin-left: auto;
+  padding: 0 20px;
+}
+
+.label-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+}
+
+.optional,
+.required-mark {
+  font-size: 12px;
+  color: var(--muted);
+  margin-left: 4px;
+}
+
+.required-mark {
+  color: var(--lamp-ink);
+}
+
+.counter {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.counter.over {
+  color: var(--error);
+  font-weight: 500;
+}
+
+.quote-input {
+  position: relative;
+  background: var(--quote-paper);
+  border: 1.5px solid transparent;
+  border-radius: 10px;
+}
+
+.quote-input:focus-within {
+  border-color: var(--lamp-ink);
+}
+
+.quote-input.invalid {
+  border-color: var(--error);
+}
+
+.quote-input svg {
+  position: absolute;
+  left: 10px;
+  top: 14px;
+  color: var(--quote-mark);
+}
+
+.quote-input textarea {
+  display: block;
+  width: 100%;
+  border: 0;
+  background: transparent;
+  padding: 10px 12px 10px 34px;
+  font-size: 16px;
+  line-height: 1.7;
+  resize: vertical;
+  color: var(--text);
+}
+
+.quote-input textarea:focus {
+  outline: none;
+}
+
+.page-input {
+  max-width: 180px;
+}
+
+.page-prefix {
+  padding-left: 14px;
+  color: var(--muted);
+}
+
+.page-input .input {
+  padding-left: 6px;
+}
+
+.body-input textarea {
+  resize: vertical;
+  min-height: 220px;
+  line-height: 1.8;
+}
+
+textarea.input::placeholder,
+.quote-input textarea::placeholder {
+  color: var(--muted);
+}

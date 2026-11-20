@@ -114,3 +114,19 @@ def other_client() -> Iterator[TestClient]:
     c = _logged_in_client("other@example.com")
     yield c
     c.__exit__(None, None, None)
+
+
+# ---- AI提案のテストで使うもの ----
+
+from app.services import ai_client as ai_client_module  # noqa: E402
+from tests.fakes import FakeAi  # noqa: E402
+
+
+@pytest.fixture
+def ai(monkeypatch: pytest.MonkeyPatch) -> Iterator[FakeAi]:
+    """OpenAI を偽物に置き換える（テストでは本物を呼ばない）。再試行の前の待ち時間も0秒にする。"""
+    fake = FakeAi()
+    monkeypatch.setattr(ai_client_module, "RETRY_WAIT_SECONDS", 0)
+    app.dependency_overrides[ai_client_module.get_ai_client] = lambda: fake
+    yield fake
+    app.dependency_overrides.pop(ai_client_module.get_ai_client, None)

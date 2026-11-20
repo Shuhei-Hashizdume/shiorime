@@ -40,3 +40,49 @@ class FakeGoogleBooks:
         if self.error:
             raise self.error
         return self.books.get(google_volume_id)
+
+
+# ---- OpenAI の偽物（AI提案のテストで使う） ----
+
+import threading  # noqa: E402
+from collections.abc import Callable  # noqa: E402
+
+from app.services.ai_client import AiError, InsightContext  # noqa: E402
+
+QUESTION = "黙ってしまう直前、頭の中ではどんな言葉が浮かんでいますか？"
+PLANS = ["次の会議で、結論から一言だけ発言する", "発言したあとの気持ちを1行メモする"]
+
+
+class FakeAi:
+    """AI の偽物。questions・plans に順番に返すもの（文字・リスト・AiError）を入れておく。空なら決まった答えを返す。
+
+    - question_calls・plan_calls：呼ばれたときに受け取ったもの（何回呼ばれたかの確認に使う）
+    - gate：入れておくと、質問を返す前に止まる（「処理中」を作るため）
+    - before_question_returns：質問を返す直前に動かす処理（途中でやめられた場合を作るため）
+    """
+
+    def __init__(self) -> None:
+        self.questions: list[str | AiError] = []
+        self.plans: list[list[str] | AiError] = []
+        self.question_calls: list[InsightContext] = []
+        self.plan_calls: list[tuple[InsightContext, str, str]] = []
+        self.gate: threading.Event | None = None
+        self.before_question_returns: Callable[[], None] | None = None
+
+    def generate_question(self, context: InsightContext) -> str:
+        self.question_calls.append(context)
+        if self.gate is not None:
+            self.gate.wait(timeout=10)
+        result = self.questions.pop(0) if self.questions else QUESTION
+        if self.before_question_returns is not None:
+            self.before_question_returns()
+        if isinstance(result, AiError):
+            raise result
+        return result
+
+    def generate_plans(self, context: InsightContext, question: str, answer: str) -> list[str]:
+        self.plan_calls.append((context, question, answer))
+        result = self.plans.pop(0) if self.plans else PLANS
+        if isinstance(result, AiError):
+            raise result
+        return result

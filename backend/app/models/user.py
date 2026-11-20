@@ -17,6 +17,20 @@ class UserAttribute(StrEnum):
     HOMEMAKER = "homemaker"
     OTHER = "other"
 
+    @property
+    def label(self) -> str:
+        """AI に送るときの日本語（api.md 7-1。AI が読みやすいように直して送る）"""
+        return _ATTRIBUTE_LABELS[self]
+
+
+_ATTRIBUTE_LABELS = {
+    UserAttribute.HIGH_SCHOOL: "高校生",
+    UserAttribute.UNIVERSITY: "大学生・専門学生",
+    UserAttribute.WORKING: "社会人",
+    UserAttribute.HOMEMAKER: "主婦・主夫",
+    UserAttribute.OTHER: "その他",
+}
+
 
 EMAIL_MAX_CHARS = 254
 

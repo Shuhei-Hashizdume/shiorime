@@ -31,6 +31,12 @@ def _user(db: Session) -> User:
     return db.scalars(select(User)).one()
 
 
+def _replace_cookie(client: TestClient, token: str) -> None:
+    # 登録でもらった Cookie を消してから入れる。テストの部品（httpx2）は、同じ名前でも上書きせずに2つ並べるため
+    client.cookies.clear()
+    client.cookies.set(AUTH_COOKIE_NAME, token)
+
+
 def test_me_returns_same_shape_as_register(client: TestClient) -> None:
     registered = register(client).json()
 
@@ -48,7 +54,7 @@ def test_expired_token(client: TestClient, db: Session) -> None:
     register(client)
     user = _user(db)
     old = create_access_token(user.id, user.token_version, clock.now() - timedelta(days=8))
-    client.cookies.set(AUTH_COOKIE_NAME, old)
+    _replace_cookie(client, old)
 
     _assert_401(client.get(ME_URL), "TOKEN_EXPIRED", cookie_cleared=True)
 
@@ -70,7 +76,7 @@ def test_token_with_wrong_signature(client: TestClient, db: Session) -> None:
         "x" * 48,
         algorithm="HS256",
     )
-    client.cookies.set(AUTH_COOKIE_NAME, forged)
+    _replace_cookie(client, forged)
 
     _assert_401(client.get(ME_URL), "UNAUTHENTICATED", cookie_cleared=True)
 

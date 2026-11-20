@@ -140,7 +140,7 @@ export default function BookDetail() {
               <span className="count">{state.book.insight_count}件</span>
             </div>
             {state.book.insight_count > 0 ? (
-              <Link to={`/books/${state.book.id}/insights`} className="row-link">
+              <Link to={`/insight-groups/${state.book.id}`} className="row-link">
                 この本の気づきを見る
                 <CaretRight size={18} aria-hidden="true" />
               </Link>

@@ -1,7 +1,7 @@
 import uuid
-from datetime import datetime
+from datetime import date, datetime
 
-from sqlalchemy import DateTime, MetaData, Text, Uuid
+from sqlalchemy import Date, DateTime, MetaData, Text, Uuid
 from sqlalchemy.orm import DeclarativeBase
 
 # 制約とインデックスの名前の付け方をそろえる。
@@ -23,5 +23,6 @@ class Base(DeclarativeBase):
     type_annotation_map = {
         str: Text(),
         datetime: DateTime(timezone=True),
+        date: Date(),
         uuid.UUID: Uuid(),
     }
