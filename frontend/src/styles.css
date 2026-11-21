@@ -2024,3 +2024,140 @@ textarea.input::placeholder,
 .ai-center {
   padding-top: 20vh;
 }
+
+/* ======== 機能5：プロフィール ======== */
+
+.group-label {
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--muted);
+  margin: var(--space-l) 4px var(--space-s);
+}
+
+.settings {
+  background: var(--card);
+  border-radius: var(--radius-card);
+  overflow: hidden;
+}
+
+.settings-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-s);
+  width: 100%;
+  min-height: 52px;
+  padding: 0 var(--space-m);
+  border: 0;
+  border-bottom: 1px solid var(--shade);
+  background: none;
+  font-size: 15px;
+  text-align: left;
+  cursor: pointer;
+}
+
+div.settings-item {
+  cursor: default;
+}
+
+.settings-item:last-child {
+  border-bottom: 0;
+}
+
+.settings-item > span:first-child {
+  white-space: nowrap;
+}
+
+.settings-item.danger {
+  color: var(--error);
+}
+
+.settings-value {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  min-width: 0;
+  color: var(--soft);
+  font-size: 14px;
+}
+
+.settings-value svg,
+.settings-caret {
+  flex: none;
+  color: var(--muted);
+}
+
+.ellipsis {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.settings-bottom {
+  margin-top: var(--space-xl);
+}
+
+.theme-choice {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+  padding: 10px;
+}
+
+.theme-option {
+  min-height: 44px;
+  border-radius: 999px;
+  border: 1.5px solid var(--shade);
+  background: none;
+  color: var(--soft);
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.theme-option.on {
+  background: var(--tint);
+  border-color: var(--lamp-ink);
+  color: var(--lamp-ink);
+  font-weight: 500;
+}
+
+.theme-note {
+  font-size: 12px;
+  color: var(--muted);
+  margin: -2px var(--space-m) 12px;
+}
+
+.settings-text {
+  padding: 12px var(--space-m);
+  font-size: 15px;
+}
+
+.settings-text small {
+  display: block;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.profile-retry {
+  width: auto;
+  margin-top: var(--space-s);
+}
+
+.attribute-option.on {
+  color: var(--lamp-ink);
+  font-weight: 500;
+}
+
+.attribute-option.on::after {
+  content: "✓";
+  margin-left: auto;
+}
+
+.attribute-option {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  padding: 0 4px;
+  text-align: left;
+}
