@@ -2161,3 +2161,41 @@ div.settings-item {
   padding: 0 4px;
   text-align: left;
 }
+
+/* ======== 利用規約・プライバシーポリシー ======== */
+
+.legal {
+  font-size: 15px;
+  color: var(--soft);
+  overflow-wrap: anywhere;
+}
+
+.legal p + p {
+  margin-top: var(--space-s);
+}
+
+.legal-heading {
+  font-size: 16px;
+  color: var(--text);
+  margin: var(--space-l) 0 var(--space-s);
+}
+
+.legal-list {
+  margin: var(--space-s) 0 0;
+  padding-left: 1.3em;
+}
+
+.legal-list li + li {
+  margin-top: 4px;
+}
+
+.legal-date {
+  margin-top: var(--space-l);
+  font-size: 13px;
+  color: var(--muted);
+  text-align: right;
+}
+
+.legal-note {
+  margin-top: var(--space-s);
+}
