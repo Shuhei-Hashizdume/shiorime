@@ -5,14 +5,14 @@
 export type LegalSection = { heading: string; paragraphs?: string[]; items?: string[]; note?: string };
 export type LegalDocument = { intro: string; sections: LegalSection[]; enactedOn: string };
 
-/** 運営者の名前と問い合わせ先（公開前に決める） */
-export const OPERATOR = "［運営者名］";
-export const CONTACT = "［問い合わせ先］";
+/** 運営者の名前と問い合わせ先。今は空欄（決まったらここに入れる） */
+export const OPERATOR = "";
+export const CONTACT = "";
 
 const ENACTED_ON = "2026年11月21日";
 
 export const TERMS: LegalDocument = {
-  intro: `この利用規約（以下「本規約」）は、${OPERATOR}（以下「運営者」）が提供する「SHIORIME」（以下「本サービス」）の利用条件を定めるものです。本サービスを利用するには、本規約とプライバシーポリシーに同意していただく必要があります。`,
+  intro: `この利用規約（以下「本規約」）は、「SHIORIME」（以下「本サービス」）の運営者（以下「運営者」）が提供する本サービスの利用条件を定めるものです。本サービスを利用するには、本規約とプライバシーポリシーに同意していただく必要があります。`,
   sections: [
     {
       heading: "1. 本サービスについて",
@@ -98,14 +98,14 @@ export const TERMS: LegalDocument = {
     },
     {
       heading: "12. お問い合わせ",
-      paragraphs: [`本サービスについてのお問い合わせは、${CONTACT} までご連絡ください。`],
+      paragraphs: [`運営者：${OPERATOR}`, `お問い合わせ：${CONTACT}`],
     },
   ],
   enactedOn: ENACTED_ON,
 };
 
 export const PRIVACY: LegalDocument = {
-  intro: `${OPERATOR}（以下「運営者」）は、「SHIORIME」（以下「本サービス」）で扱う利用者の情報を、次のとおり取り扱います。`,
+  intro: `「SHIORIME」（以下「本サービス」）の運営者（以下「運営者」）は、本サービスで扱う利用者の情報を、次のとおり取り扱います。`,
   sections: [
     {
       heading: "1. 集める情報",
