@@ -77,7 +77,7 @@ def test_question_is_normalized(monkeypatch: pytest.MonkeyPatch) -> None:
     (call,) = fake.calls
     assert call["model"] == settings.openai_model
     assert call["text_format"] is QuestionOutput
-    assert call["max_output_tokens"] == 300
+    assert call["max_output_tokens"] == 1000
     # 利用者の文章を OpenAI 側に保存させない
     assert call["store"] is False
     assert "気づき：本文" in call["input"]
@@ -89,7 +89,7 @@ def test_plans_are_returned_in_order() -> None:
 
     assert client.generate_plans(CONTEXT, "質問", "回答") == ["一つ目", "二つ目", "三つ目"]
     (call,) = fake.calls
-    assert call["max_output_tokens"] == 600
+    assert call["max_output_tokens"] == 1500
     assert "あなたの質問：質問" in call["input"]
     assert "利用者の回答：回答" in call["input"]
 
