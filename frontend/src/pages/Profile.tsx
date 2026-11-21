@@ -68,7 +68,7 @@ export default function Profile() {
     } catch {
       // 通信できなくても、この端末ではログアウトした扱いにする
     }
-    logOut();
+    logOut(null, true);
     navigate("/login", { replace: true });
   }
 
@@ -173,7 +173,7 @@ export default function Profile() {
         <PasswordSheet
           onClose={() => setSheet(null)}
           onDone={() => {
-            logOut("password_changed");
+            logOut("password_changed", true);
             navigate("/login", { replace: true });
           }}
           onUnauthorized={onUnauthorized}
@@ -183,7 +183,7 @@ export default function Profile() {
         <WithdrawSheet
           onClose={() => setSheet(null)}
           onDone={() => {
-            logOut("withdrawn");
+            logOut("withdrawn", true);
             navigate("/login", { replace: true });
           }}
           onUnauthorized={onUnauthorized}

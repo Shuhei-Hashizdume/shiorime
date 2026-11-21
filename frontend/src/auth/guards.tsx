@@ -18,8 +18,8 @@ export function RequireAuth({ children }: { children: ReactNode }) {
     if (location.pathname === "/") {
       return <Navigate to={state.notice ? "/login" : "/welcome"} replace />;
     }
-    // パスワードの変更・退会は自分で選んで抜けたので、戻り先を付けない（次にログインする人が元の画面へ飛ばないように）
-    if (state.notice === "password_changed" || state.notice === "withdrawn") return <Navigate to="/login" replace />;
+    // ログアウト・パスワードの変更・退会は自分で選んで抜けたので、戻り先を付けない（次にログインする人が元の画面へ飛ばないように）
+    if (state.left) return <Navigate to="/login" replace />;
     return <Navigate to={withNext("/login", here)} replace />;
   }
   return <>{children}</>;

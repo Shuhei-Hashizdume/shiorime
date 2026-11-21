@@ -11,15 +11,16 @@ export type LoginNotice = "expired" | "revoked" | "password_changed" | "withdraw
 
 type AuthState =
   | { status: "loading" }
-  | { status: "guest"; notice: LoginNotice | null }
+  /** left：ログアウト・パスワードの変更・退会で、自分で選んで抜けた（ログイン画面に戻り先を付けない） */
+  | { status: "guest"; notice: LoginNotice | null; left?: boolean }
   | { status: "user"; user: Me };
 
 type AuthContextValue = {
   state: AuthState;
   /** ログイン・新規登録に成功したとき */
   logIn: (user: Me) => void;
-  /** ログアウトしたとき・401 が返ったとき */
-  logOut: (notice?: LoginNotice | null) => void;
+  /** ログアウトしたとき・401 が返ったとき。自分で選んで抜けたときは left を true にする */
+  logOut: (notice?: LoginNotice | null, left?: boolean) => void;
   /** お知らせを1回出したら消す */
   clearNotice: () => void;
 };
@@ -54,11 +55,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const logIn = useCallback((user: Me) => setState({ status: "user", user }), []);
   const logOut = useCallback(
-    (notice: LoginNotice | null = null) => setState({ status: "guest", notice }),
+    (notice: LoginNotice | null = null, left = false) => setState({ status: "guest", notice, left }),
     [],
   );
   const clearNotice = useCallback(
-    () => setState((prev) => (prev.status === "guest" && prev.notice ? { status: "guest", notice: null } : prev)),
+    () => setState((prev) => (prev.status === "guest" && prev.notice ? { ...prev, notice: null } : prev)),
     [],
   );
 
