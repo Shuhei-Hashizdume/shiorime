@@ -6,6 +6,7 @@ import { Link, useLocation, useNavigate, useParams, useSearchParams } from "reac
 
 import { ApiError } from "../api/client";
 import { BODY_MAX, insightsApi, PAGE_MAX, PAGE_MIN, QUOTE_MAX } from "../api/insights";
+import { useRelogin } from "../auth/useRelogin";
 import { useUnauthorized } from "../auth/useUnauthorized";
 import { BookCover } from "../components/BookCover";
 import { ErrorBanner, FieldErrorText, InfoBanner } from "../components/Feedback";
@@ -63,6 +64,9 @@ export default function InsightEditor() {
   const location = useLocation();
   const fromDetail = (location.state as { fromDetail?: boolean } | null)?.fromDetail === true;
   const onUnauthorized = useUnauthorized();
+  // 保存のときにログインが切れていたら、その場でログインし直して送り直す（api.md 3-6）
+  const relogin = useRelogin("ログインして保存する");
+  const afterRelogin = useRef(false);
   const showToast = useToast();
 
   const [state, setState] = useState<LoadState>({ kind: "loading" });
@@ -173,7 +177,16 @@ export default function InsightEditor() {
       }
     } catch (error) {
       setSaving(false);
+      if (relogin.handle(error, () => {
+        afterRelogin.current = true;
+        void handleSave();
+      })) return;
       if (onUnauthorized(error)) return;
+      // 別のアカウントでログインし直した場合は、その人のものではないので見つからない。書いた文は残す
+      if (afterRelogin.current && error instanceof ApiError && error.status === 404) {
+        setBanner("この気づき（本）は見つかりませんでした。ログインしているアカウントを確かめてください。");
+        return;
+      }
       if (error instanceof ApiError && error.code === "BOOK_NOT_FOUND") {
         setBookGone(true);
         return;
@@ -360,6 +373,7 @@ export default function InsightEditor() {
           </div>
         </Sheet>
       )}
+      {relogin.sheet}
     </main>
   );
 }

@@ -11,6 +11,7 @@ import { Link, useLocation, useNavigate, useParams } from "react-router";
 
 import { ANSWER_MAX, aiProposalsApi, type Proposal } from "../api/aiProposals";
 import { ApiError } from "../api/client";
+import { useRelogin } from "../auth/useRelogin";
 import { useUnauthorized } from "../auth/useUnauthorized";
 import { ErrorBanner, FieldErrorText, Notice } from "../components/Feedback";
 import { Waiting } from "../components/Growing";
@@ -48,6 +49,9 @@ export default function AiProposal() {
   const navigate = useNavigate();
   const location = useLocation();
   const onUnauthorized = useUnauthorized();
+  // 送信のときにログインが切れていたら、その場でログインし直して送り直す（api.md 3-6）
+  const relogin = useRelogin("ログインして送る");
+  const afterRelogin = useRef(false);
   // 気づきの詳細から始めて来たか。再読み込みで残らないよう、読んだらすぐ履歴から消す
   const fresh = useRef((location.state as { fresh?: boolean } | null)?.fresh === true);
 
@@ -153,8 +157,8 @@ export default function AiProposal() {
     goToInsight();
   }
 
-  async function handleSend(event: FormEvent) {
-    event.preventDefault();
+  async function handleSend(event?: FormEvent) {
+    event?.preventDefault();
     if (!live || sending) return;
     const found = validateAnswer(draft);
     setAnswerError(found);
@@ -176,7 +180,16 @@ export default function AiProposal() {
         retries_left: isRetry ? live.retries_left - 1 : live.retries_left,
       });
     } catch (error) {
+      if (relogin.handle(error, () => {
+        afterRelogin.current = true;
+        void handleSend();
+      })) return;
       if (onUnauthorized(error)) return;
+      if (afterRelogin.current && error instanceof ApiError && error.status === 404) {
+        // 別のアカウントでログインし直した場合。書いた回答は残す
+        setSendError("このAI提案は見つかりませんでした。ログインしているアカウントを確かめてください。");
+        return;
+      }
       if (error instanceof ApiError && error.code === "AI_PROPOSAL_STATE_CONFLICT") {
         // 別の操作が先に状態を進めていた。エラーとして見せず、今の状態の表示に切り替える
         try {
@@ -368,6 +381,7 @@ export default function AiProposal() {
           </div>
         </Sheet>
       )}
+      {relogin.sheet}
     </main>
   );
 }
