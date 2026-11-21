@@ -87,3 +87,11 @@ export const ATTRIBUTE_LABELS: Record<Attribute, string> = {
   homemaker: "主婦・主夫",
   other: "その他",
 };
+
+export const meApi = {
+  /** 属性の変更。GET /me と同じ形が返る（api.md 7-2） */
+  updateAttribute: (attribute: Attribute) => api.patch<Me>("/me", { attribute }),
+  changePassword: (current_password: string, new_password: string) =>
+    api.post<void>("/me/password", { current_password, new_password }),
+  withdraw: (password: string) => api.post<void>("/me/withdraw", { password }),
+};

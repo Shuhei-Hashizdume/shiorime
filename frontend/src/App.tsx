@@ -11,7 +11,7 @@ import BookInsights from "./pages/BookInsights";
 import InsightDetail from "./pages/InsightDetail";
 import InsightEditor from "./pages/InsightEditor";
 import InsightGroups from "./pages/InsightGroups";
-import { ProfilePlaceholder } from "./pages/Placeholder";
+import Profile from "./pages/Profile";
 import Register from "./pages/Register";
 import Shelf from "./pages/Shelf";
 import Welcome from "./pages/Welcome";
@@ -43,7 +43,7 @@ export default function App() {
       <Route path="/insights/:insightId/edit" element={<RequireAuth><InsightEditor /></RequireAuth>} />
       {/* AI提案は共通メニューを出さない（要件定義書 9章の例外） */}
       <Route path="/ai-proposals/:proposalId" element={<RequireAuth><AiProposal /></RequireAuth>} />
-      <Route path="/profile" element={<WithTabs><ProfilePlaceholder /></WithTabs>} />
+      <Route path="/profile" element={<WithTabs><Profile /></WithTabs>} />
       <Route path="/welcome" element={<Guest><Welcome /></Guest>} />
       <Route path="/login" element={<Guest><Login /></Guest>} />
       <Route path="/register" element={<Guest><Register /></Guest>} />

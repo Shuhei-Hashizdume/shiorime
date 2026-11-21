@@ -72,3 +72,27 @@ class UserResponse(BaseModel):
     id: uuid.UUID
     email: str
     attribute: UserAttribute
+
+
+# ---- プロフィール（api.md 7-2） ----
+
+
+class AttributeUpdate(BaseModel):
+    """変えられるのは属性だけ。メールアドレスなどほかの項目は 422。"""
+
+    model_config = ConfigDict(extra="forbid")
+
+    attribute: UserAttribute
+
+
+class PasswordChangeRequest(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    current_password: CurrentPassword
+    new_password: NewPassword
+
+
+class WithdrawRequest(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    password: CurrentPassword
